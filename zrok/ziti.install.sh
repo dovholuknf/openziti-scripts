@@ -2,7 +2,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd $SCRIPT_DIR
 
 echo "sourcing ziti-cli-functions.sh"
-ZITI_CLI_FUNC="https://raw.githubusercontent.com/openziti/ziti/fix-quickstart-again/quickstart/docker/image/ziti-cli-functions.sh"
 ZITI_CLI_FUNC="https://get.openziti.io/quick/ziti-cli-functions.sh"
 #source /dev/stdin <<< "$(wget -qO- https://get.openziti.io/quick/ziti-cli-functions.sh)";
 source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
@@ -10,17 +9,6 @@ source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
 unsetZitiEnv
 source $SCRIPT_DIR/zrok.install.env
 source $SCRIPT_DIR/ziti.install.env
-
-export EXTERNAL_IP="$(curl -s ipinfo.io | jq -r .ip)"
-export ZITI_EDGE_CONTROLLER_IP_OVERRIDE="${EXTERNAL_IP}"
-export ZITI_EDGE_ROUTER_IP_OVERRIDE="${EXTERNAL_IP}"
-export ZITI_CTRL_EDGE_ADVERTISED_ADDRESS="${EXTERNAL_DNS}"
-export ZITI_ROUTER_ADVERTISED_HOST="${EXTERNAL_DNS}"
-export ZITI_CTRL_LISTENER_PORT=8440
-export ZITI_CTRL_EDGE_ADVERTISED_PORT=8441
-export ZITI_EDGE_ROUTER_PORT=8442
-export ZITI_PKI_ALT_SERVER_CERT=/etc/letsencrypt/live/clint.demo.openziti.org/fullchain.pem
-export ZITI_PKI_ALT_SERVER_KEY=/etc/letsencrypt/live/clint.demo.openziti.org/privkey.pem
 
 echo "Running expressInstall"
 expressInstall
