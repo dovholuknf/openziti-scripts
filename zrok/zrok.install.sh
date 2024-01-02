@@ -73,6 +73,8 @@ cd $ZROK_ROOT/bin
 wget https://github.com/openziti/zrok/releases/download/v${ZROK_VERSION}/zrok_${ZROK_VERSION}_linux_amd64.tar.gz
 tar zxvf zrok_${ZROK_VERSION}_linux_amd64.tar.gz
 
+: "${ZROK_ADMIN_PWD:=${ZITI_PWD}}"
+
 cat > $ZROK_ROOT/ctrl.yml << HERE
 v: 3
 admin:
