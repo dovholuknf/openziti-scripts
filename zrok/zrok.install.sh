@@ -65,6 +65,7 @@ HERE
 sudo nginx -t
 sudo systemctl restart nginx
 
+: "${ZROK_ADMIN_PWD:=${ZITI_PWD}}"
 
 mkdir -p $ZROK_ROOT/bin
 cd $ZROK_ROOT/bin
