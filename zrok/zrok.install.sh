@@ -135,7 +135,7 @@ sudo systemctl enable --now zrok-controller
 echo "sleeping while the controller starts..."
 sleep 3
 
-zrok config set apiEndpoint https://127.0.0.1:${ZROK_CTRL_PORT}
+zrok config set apiEndpoint ${ZROK_API_ENDPOINT}
 
 zrok admin create frontend ${ZROK_FRONTEND_ID} public https://{token}.${WILDCARD_DNS}:${ZROK_NGINX_PORT}
 
