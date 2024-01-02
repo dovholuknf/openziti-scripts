@@ -2,7 +2,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd $SCRIPT_DIR
 
 source ./zrok.install.env
-source ./ziti.install.env
 source $HOME/.ziti/quickstart/$(hostname)/$(hostname).env
 
 sudo apt install nginx -y
@@ -27,7 +26,7 @@ http {
 
   server {
       listen              ${ZROK_NGINX_PORT} ssl;
-      server_name         *.${ZROK_ZITI_CTRL_WILDCARD};
+      server_name         *.${WILDCARD_DNS};
       ssl_certificate     ${LE_CHAIN};
       ssl_certificate_key ${LE_KEY};
       ssl_protocols       TLSv1.2;
@@ -78,7 +77,7 @@ cat > $ZROK_ROOT/ctrl.yml << HERE
 v: 3
 admin:
   secrets:
-    -               $ZROK_ADMIN_TOKEN
+    -               $ZROK_ADMIN_PWD
   tou_link:         '<a href="https://openziti.io" target="_">Terms and Conditions</a>'
 endpoint:
   host:             0.0.0.0
@@ -136,11 +135,11 @@ sudo systemctl enable --now zrok-controller
 echo "sleeping while the controller starts..."
 sleep 3
 
-zrok admin create frontend ${ZROK_FRONTEND_ID} public https://{token}.${ZROK_ZITI_CTRL_WILDCARD}:${ZROK_NGINX_PORT}
+zrok admin create frontend ${ZROK_FRONTEND_ID} public https://{token}.${WILDCARD_DNS}:${ZROK_NGINX_PORT}
 
 
 cat > $ZROK_ROOT/http-frontend.yml << HERE
-host_match: ${ZROK_ZITI_CTRL_WILDCARD}
+host_match: ${WILDCARD_DNS}
 address: 0.0.0.0:${ZROK_FRONTEND_PORT}
 HERE
 

@@ -8,7 +8,6 @@ source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
 
 unsetZitiEnv
 source $SCRIPT_DIR/zrok.install.env
-source $SCRIPT_DIR/ziti.install.env
 
 echo "Running expressInstall"
 expressInstall
