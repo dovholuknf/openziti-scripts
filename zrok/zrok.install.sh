@@ -73,8 +73,6 @@ cd $ZROK_ROOT/bin
 wget https://github.com/openziti/zrok/releases/download/v${ZROK_VERSION}/zrok_${ZROK_VERSION}_linux_amd64.tar.gz
 tar zxvf zrok_${ZROK_VERSION}_linux_amd64.tar.gz
 
-: "${ZROK_ADMIN_PWD:=${ZITI_PWD}}"
-
 cat > $ZROK_ROOT/ctrl.yml << HERE
 v: 3
 admin:
@@ -136,6 +134,8 @@ sudo systemctl enable --now zrok-controller
 
 echo "sleeping while the controller starts..."
 sleep 3
+
+zrok config set apiEndpoint https://127.0.0.1:${ZROK_CTRL_PORT}
 
 zrok admin create frontend ${ZROK_FRONTEND_ID} public https://{token}.${WILDCARD_DNS}:${ZROK_NGINX_PORT}
 
