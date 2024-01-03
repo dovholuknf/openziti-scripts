@@ -34,7 +34,7 @@ sudo systemctl -q status ziti-router --lines=0 --no-pager
 #sed -i 's#^      server_cert\: .*#      server_cert\: "'${LE_CHAIN}'"#g' $ZITI_HOME/$ZITI_NETWORK.yaml
 #sed -i 's#^      key\:         .*#      key\:         "'${LE_KEY}'"#g' $ZITI_HOME/$ZITI_NETWORK.yaml
 
-# cat /etc/letsencrypt/live/${ZROK_ZITI_CTRL_WILDCARD}/fullchain.pem >> $ZITI_HOME/pki/cas.pem
+# cat /etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem >> $ZITI_HOME/pki/cas.pem
 curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem >> $ZITI_HOME/pki/cas.pem
 curl -s https://letsencrypt.org/certs/isrgrootx1.pem >> $ZITI_HOME/pki/cas.pem
 

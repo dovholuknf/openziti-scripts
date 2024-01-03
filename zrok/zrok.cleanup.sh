@@ -19,9 +19,9 @@ echo "deleting from the openziti overlay..."
 ## zrok cleanup
 if [[ -f "$HOME/.ziti/quickstart/$(hostname -s)/$(hostname -s).env" ]]; then
     source $HOME/.ziti/quickstart/$(hostname -s)/$(hostname -s).env
-    #echo ziti edge login ctrl.${ZROK_ZITI_CTRL_WILDCARD}:${ZITI_EDGE_CONTROLLER_PORT} -u $ZITI_USER -p $ZITI_PWD -y
-    export ZITI_EDGE_CTRL_ADVERTISED_HOST_PORT=ctrl.${ZROK_ZITI_CTRL_WILDCARD}:${ZITI_EDGE_CONTROLLER_PORT}
-    ziti edge login ctrl.${ZROK_ZITI_CTRL_WILDCARD}:${ZITI_EDGE_CONTROLLER_PORT} -u $ZITI_USER -p $ZITI_PWD -y
+    #echo ziti edge login ctrl.${WILDCARD_DNS}:${ZITI_EDGE_CONTROLLER_PORT} -u $ZITI_USER -p $ZITI_PWD -y
+    export ZITI_EDGE_CTRL_ADVERTISED_HOST_PORT=ctrl.${WILDCARD_DNS}:${ZITI_EDGE_CONTROLLER_PORT}
+    ziti edge login ctrl.${WILDCARD_DNS}:${ZITI_EDGE_CONTROLLER_PORT} -u $ZITI_USER -p $ZITI_PWD -y
     ziti edge delete identity frontend
     ziti edge delete identity ctrl
 fi

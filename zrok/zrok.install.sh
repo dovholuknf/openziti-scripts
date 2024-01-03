@@ -65,7 +65,7 @@ HERE
 sudo nginx -t
 sudo systemctl restart nginx
 
-: "${ZROK_ADMIN_PWD:=${ZITI_PWD}}"
+: "${ZROK_ADMIN_TOKEN:=${ZITI_PWD}}"
 
 mkdir -p $ZROK_ROOT/bin
 cd $ZROK_ROOT/bin
@@ -78,7 +78,7 @@ cat > $ZROK_ROOT/ctrl.yml << HERE
 v: 3
 admin:
   secrets:
-    -               $ZROK_ADMIN_PWD
+    -               $ZROK_ADMIN_TOKEN
   tou_link:         '<a href="https://openziti.io" target="_">Terms and Conditions</a>'
 endpoint:
   host:             0.0.0.0
