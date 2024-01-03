@@ -1,0 +1,20 @@
+svc=docker.whale
+intercept_address="${svc}.ziti"
+intercept_port=80
+offload_address=localhost
+offload_port=2000
+
+function createService {
+  ziti edge create config ${svc}.host.config host.v1 '{"protocol":"tcp", "address":"'"${offload_address}"'", "port":'${offload_port}'}'
+  ziti edge create config ${svc}.int.config  intercept.v1 '{"protocols":["tcp"],"addresses":["'"${intercept_address}"'"], "portRanges":[{"low":'${intercept_port}', "high":'${intercept_port}'}]}'
+  ziti edge create service "${svc}" --configs "${svc}.host.config","${svc}.int.config"
+  ziti edge create service-policy "${svc}.bind" Bind --service-roles "@${svc}" --identity-roles "#${svc}.binders"
+  ziti edge create service-policy "${svc}.dial" Dial --service-roles "@${svc}" --identity-roles "#${svc}.dialers"
+}
+
+function deleteService {
+  ziti edge delete config  where 'name contains "'"${svc}"'."'
+  ziti edge delete service where 'name = "'"${svc}"'"'
+  ziti edge delete sp      where 'name contains "'"${svc}"'."'
+}
+
