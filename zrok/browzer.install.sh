@@ -18,20 +18,6 @@ else
   sudo systemctl restart ziti-router
 fi
 
-echo "configuring OpenZiti for BrowZer..."
-ziti_object_prefix=browzer-keycloak
-issuer=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .issuer)
-jwks=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .jwks_uri)
-
-echo "OIDC issuer   : $issuer"
-echo "OIDC jwks url : $jwks"
-
-ext_jwt_signer=$(ziti edge create ext-jwt-signer "${ziti_object_prefix}-ext-jwt-signer" "${issuer}" --jwks-endpoint "${jwks}" --audience "${ZITI_BROWZER_CLIENT_ID}" --claims-property email)
-echo "ext jwt signer id: $ext_jwt_signer"
-
-auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer})
-echo "auth policy id: $auth_policy"
-
 function generateBrowzerComposeFile() {
 cat > $SCRIPT_DIR/browzer-compose.yml <<HERE
 version: "3.3"
@@ -103,6 +89,38 @@ HERE
 echo "wrote docker compose file for browzer to $SCRIPT_DIR/browzer-compose.yml"
 }
 generateBrowzerComposeFile
+
+echo "using docker compose to pull, down, then up the ENTIRE ENVIRONMENT"
+echo "*******************************************"
+echo "** NEW ENVIRONMENT BEING PROVISIONED NOW **"
+echo "*******************************************"
+echo " "
+docker compose -f $SCRIPT_DIR/browzer-compose.yml pull
+docker compose -f $SCRIPT_DIR/browzer-compose.yml down -v
+docker compose -f $SCRIPT_DIR/browzer-compose.yml up -d
+
+echo "waiting for keycloak to come online...."
+wait_for_200="https://keycloak.clint.demo.openziti.org:8446"
+while [[ "$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null "${wait_for_200}")" != "200" ]]; do
+  echo "waiting for ${wait_for_200}"
+  sleep 5
+done
+echo "${wait_for_200} responded with http 200"
+sleep 1
+
+echo "configuring OpenZiti for BrowZer..."
+ziti_object_prefix=browzer-keycloak
+issuer=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .issuer)
+jwks=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .jwks_uri)
+
+echo "OIDC issuer   : $issuer"
+echo "OIDC jwks url : $jwks"
+
+ext_jwt_signer=$(ziti edge create ext-jwt-signer "${ziti_object_prefix}-ext-jwt-signer" "${issuer}" --jwks-endpoint "${jwks}" --audience "${ZITI_BROWZER_CLIENT_ID}" --claims-property email)
+echo "ext jwt signer id: $ext_jwt_signer"
+
+auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer})
+echo "auth policy id: $auth_policy"
 
 echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
 for id in ${ZITI_BROWZER_IDENTITIES}; do
