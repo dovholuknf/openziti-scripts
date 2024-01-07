@@ -188,12 +188,11 @@ sudo systemctl enable --now zrok-frontend
 #echo "After you get the invite token, you can then go to:"
 #echo ""
 #echo "  https://${ZROK_API_ADDRESS}:${ZROK_NGINX_PORT}/register/\${invite-token-here}"
-echo " "
-echo "Inviting the first zrok user now!"
-echo " "
-zrok invite
-
-sleep 1
+#echo " "
+#echo "Inviting the first zrok user now!"
+#echo " "
+#zrok invite#
+#sleep 1
 
 #journalctl --no-pager -u zrok-controller -n 100 | grep "has registration token"
 echo " "
