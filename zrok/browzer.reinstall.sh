@@ -6,5 +6,3 @@ $SCRIPT_DIR/zrok.reinstall.sh
 
 $SCRIPT_DIR/browzer.install.sh
 
-source $SCRIPT_DIR/docker-whale
-createService
