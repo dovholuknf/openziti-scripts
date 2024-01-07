@@ -39,6 +39,7 @@ services:
   browzer-keycloak:
     image: quay.io/keycloak/keycloak:23.0.1
     restart: always
+    user: root
 
     volumes:
       - /data/docker/letsencrypt:/etc/letsencrypt
