@@ -35,7 +35,7 @@ services:
       - "${KEYCLOAK_PORT}:8443"
     
     environment:
-      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_PWD}
     
     command:
