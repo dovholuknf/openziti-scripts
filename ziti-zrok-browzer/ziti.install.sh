@@ -5,7 +5,7 @@ ZITI_CLI_FUNC="https://get.openziti.io/quick/ziti-cli-functions.sh"
 source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
 
 unsetZitiEnv
-source $SCRIPT_DIR/zrok.install.env
+source $SCRIPT_DIR/ziti-zrok-browzer.env
 
 echo "Running expressInstall"
 expressInstall
