@@ -26,7 +26,7 @@ kcadm create clients \
   -r ${KEYCLOAK_REALM} \
   -s clientId=${ZITI_BROWZER_CLIENT_ID} \
   -s protocol=openid-connect \
-  -s 'redirectUris=["https://${ZITI_BROWZER_VHOST}/*"]' \
+  -s 'redirectUris=["https://'${ZITI_BROWZER_VHOST}'/*"]' \
   -s 'directAccessGrantsEnabled=true'
 
 CLIENT_SCOPE_ID=$(kcadm get clients -r ${KEYCLOAK_REALM} | jq -r '.[] | select(.clientId == "'${ZITI_BROWZER_CLIENT_ID}'") | .id')
