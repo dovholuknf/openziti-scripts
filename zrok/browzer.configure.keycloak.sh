@@ -1,4 +1,4 @@
-function kcadm {  docker compose -f ${SCRIPT_DIR}/browzer-compose.yml exec -it browzer-keycloak /opt/keycloak/bin/kcadm.sh $0; }
+function kcadm {  docker compose -f ${SCRIPT_DIR}/browzer-compose.yml exec -it browzer-keycloak /opt/keycloak/bin/kcadm.sh $@; }
 
 kcadm config credentials \
   --server ${ZITI_BROWZER_OIDC_ADDRESS} \
