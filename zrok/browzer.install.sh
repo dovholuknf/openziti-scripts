@@ -10,7 +10,6 @@ if grep -q "wss:" $HOME/.ziti/quickstart/$(hostname)/$(hostname)-edge-router.yam
 else
   echo "adding/replacing settings in the quickstart router. adding web socket listener, configuring ws block"
   sed -i 's#tproxy|host#tproxy|host\n  - binding: edge\n    address: wss:0.0.0.0:'${ZITI_BROWZER_WSS_ER_PORT}'\n    options:\n      advertise: '${ZITI_BROWZER_WSS_ER_HOST}':'${ZITI_BROWZER_WSS_ER_PORT}'\n      connectTimeoutMs: 5000\n      getSessionTimeout: 60#g' $ZITI_HOME/$ZITI_NETWORK-edge-router.yaml
-  #sed -i 's#\(^.    key\:.*\)#\1\n    alt_server_certs:\n      - server_cert\: "'${LE_CHAIN}'"\n        server_key\: "'${LE_KEY}'"#g' $ZITI_HOME/$ZITI_NETWORK-edge-router.yaml
   sed -i 's`#transport\:`transport\:`g' $ZITI_HOME/$ZITI_NETWORK-edge-router.yaml
   sed -i 's`#  ws\:`  ws\:`g' $ZITI_HOME/$ZITI_NETWORK-edge-router.yaml
   sed -i 's`#    `    `g' $ZITI_HOME/$ZITI_NETWORK-edge-router.yaml
@@ -34,40 +33,33 @@ auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --p
 echo "auth policy id: $auth_policy"
 
 
-
-
-
-
-
-
-
-#SKIP JAN 5 2024: echo "NOTE: copying letsencrypt certs to '$HOME/.browzer/pki'! IF these certs expire, you'll have to copy them here again!"
-#SKIP JAN 5 2024: mkdir -p $HOME/.browzer/pki
-#SKIP JAN 5 2024: sudo cp "/etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem" "$HOME/.browzer/pki/"
-#SKIP JAN 5 2024: sudo cp "/etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem" "$HOME/.browzer/pki/"
-#SKIP JAN 5 2024: sudo chmod 777 $HOME/.browzer/pki/*
-#SKIP JAN 5 2024: sudo chmod +x $HOME/.browzer/pki/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 cat > $SCRIPT_DIR/browzer-compose.yml <<HERE
 version: "3.3"
 services:
+  browzer-keycloak:
+    image: quay.io/keycloak/keycloak:23.0.1
+    restart: always
+
+    volumes:
+      - /data/docker/letsencrypt:/etc/letsencrypt
+      - /data/docker/keycloak/themes/mytheme:/opt/keycloak/themes/mytheme
+    
+    ports:
+      - "${KEYCLOAK_PORT}:8443"
+    
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=mykeycloak
+    
+    command:
+      - "start"
+      - "--https-certificate-file=${LE_CHAIN}"
+      - "--https-certificate-key-file=${LE_KEY}"
+      - "--hostname=${KEYCLOAK_BASE}"
+
   browzer-bootstrapper:
     image: ghcr.io/openziti/ziti-browzer-bootstrapper:latest
-    #restart: always
+    restart: always
 
     volumes:
       - /usr/local/ziti/log:/home/node/ziti-http-agent/log
@@ -95,7 +87,7 @@ services:
                        "service": "${ZITI_BROWZER_SERVICE}",
                        "path": "/",
                        "scheme": "http",
-                       "idp_issuer_base_url": "${ZITI_BROWZER_OIDC_BASE}",
+                       "idp_issuer_base_url": "${ZITI_BROWZER_OIDC_ADDRESS}",
                        "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                        "idp_type": "keycloak",
                        "idp_realm": "${KEYCLOAK_REALM}"
