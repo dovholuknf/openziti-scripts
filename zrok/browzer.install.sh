@@ -36,7 +36,7 @@ services:
     
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_PWD}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PWD}
     
     command:
       - "start"
