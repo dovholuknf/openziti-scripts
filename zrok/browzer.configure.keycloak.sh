@@ -3,8 +3,8 @@ function kcadm {  docker compose -f ${SCRIPT_DIR}/browzer-compose.yml exec -it b
 kcadm config credentials \
   --server ${ZITI_BROWZER_OIDC_ADDRESS} \
   --realm master \
-  --user admin \
-  --password ${KEYCLOAK_PWD}
+  --user ${KEYCLOAK_ADMIN_USER} \
+  --password ${KEYCLOAK_ADMIN_PWD}
 
 kcadm create realms \
   -s realm=${KEYCLOAK_REALM} \
@@ -26,7 +26,7 @@ kcadm create clients \
   -r ${KEYCLOAK_REALM} \
   -s clientId=${ZITI_BROWZER_CLIENT_ID} \
   -s protocol=openid-connect \
-  -s "redirectUris=[\"https://${ZITI_BROWZER_VHOST}/*\"]" \
+  -s 'redirectUris=["https://${ZITI_BROWZER_VHOST}/*"]' \
   -s 'directAccessGrantsEnabled=true'
 
 CLIENT_SCOPE_ID=$(kcadm get clients -r ${KEYCLOAK_REALM} | jq -r '.[] | select(.clientId == "'${ZITI_BROWZER_CLIENT_ID}'") | .id')
