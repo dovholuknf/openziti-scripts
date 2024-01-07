@@ -108,6 +108,9 @@ done
 echo "${wait_for_200} responded with http 200"
 sleep 1
 
+echo "configuring keycloak for OpenZiti and Browzer"
+$SCRIPT_DIR/browzer.configure.keycloak.sh
+
 echo "configuring OpenZiti for BrowZer..."
 ziti_object_prefix=browzer-keycloak
 issuer=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .issuer)

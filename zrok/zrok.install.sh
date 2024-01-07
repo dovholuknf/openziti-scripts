@@ -87,7 +87,7 @@ endpoint:
   host:             0.0.0.0
   port:             $ZROK_CTRL_PORT
 store:
-  path:             zrok.db
+  path:             $ZROK_ROOT/zrok.db
   type:             sqlite3
 ziti:
   api_endpoint:     "https://${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS}:${ZITI_CTRL_EDGE_ADVERTISED_PORT}"
