@@ -4,7 +4,7 @@ kcadm config credentials \
   --server ${ZITI_BROWZER_OIDC_ADDRESS} \
   --realm master \
   --user admin \
-  --password $(cat ${SCRIPT_DIR}/keycloak.pwd)
+  --password ${KEYCLOAK_PWD}
 
 kcadm create realms \
   -s realm=${KEYCLOAK_REALM} \
