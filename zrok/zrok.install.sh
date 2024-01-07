@@ -1,8 +1,15 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-cd $SCRIPT_DIR
 
-source ./zrok.install.env
+source ${SCRIPT_DIR}/zrok.install.env
 source $HOME/.ziti/quickstart/$(hostname)/$(hostname).env
+
+advertised_host_port="${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS}:${ZITI_CTRL_EDGE_ADVERTISED_PORT}"
+while [[ "$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null https://"${advertised_host_port}"/edge/client/v1/version)" != "200" ]]; do
+  echo "waiting for https://${advertised_host_port}"
+  sleep 3
+done
+
+echo "ziti controller is running..."
 
 sudo apt install nginx -y
 
@@ -68,11 +75,7 @@ sudo systemctl restart nginx
 : "${ZROK_ADMIN_TOKEN:=${ZITI_PWD}}"
 
 mkdir -p $ZROK_ROOT/bin
-cd $ZROK_ROOT/bin
-
-#xxx left in case break ZROK_VERSION=0.3.4
-wget https://github.com/openziti/zrok/releases/download/v${ZROK_VERSION}/zrok_${ZROK_VERSION}_linux_amd64.tar.gz
-tar zxvf zrok_${ZROK_VERSION}_linux_amd64.tar.gz
+ZROK_BINARY=$(which zrok)
 
 cat > $ZROK_ROOT/ctrl.yml << HERE
 v: 3
@@ -121,7 +124,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=$ZROK_ROOT
-ExecStart="$ZROK_ROOT/bin/zrok" controller "$ZROK_ROOT/ctrl.yml"
+ExecStart="$ZROK_BINARY" controller "$ZROK_ROOT/ctrl.yml"
 Restart=always
 RestartSec=2
 LimitNOFILE=65535
@@ -133,8 +136,12 @@ HERE
 sudo systemctl daemon-reload
 sudo systemctl enable --now zrok-controller
 
-echo "sleeping while the controller starts..."
-sleep 3
+echo "wating for ${ZROK_API_ENDPOINT}"
+sleep 5
+while [[ "$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null ${ZROK_API_ENDPOINT})" != "200" ]]; do
+  echo "waiting for ${ZROK_API_ENDPOINT}"
+  sleep 1
+done
 
 zrok config set apiEndpoint ${ZROK_API_ENDPOINT}
 
@@ -154,7 +161,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=$ZROK_ROOT
-ExecStart="$ZROK_ROOT/bin/zrok" access public "$ZROK_ROOT/http-frontend.yml"
+ExecStart="$ZROK_BINARY" access public "$ZROK_ROOT/http-frontend.yml"
 Restart=always
 RestartSec=2
 LimitNOFILE=65535

@@ -17,4 +17,3 @@ function deleteService {
   ziti edge delete service where 'name = "'"${svc}"'"'
   ziti edge delete sp      where 'name contains "'"${svc}"'."'
 }
-
