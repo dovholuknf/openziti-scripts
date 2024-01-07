@@ -32,7 +32,7 @@ echo "ext jwt signer id: $ext_jwt_signer"
 auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer})
 echo "auth policy id: $auth_policy"
 
-
+function generateBrowzerComposeFile() {
 cat > $SCRIPT_DIR/browzer-compose.yml <<HERE
 version: "3.3"
 services:
@@ -99,6 +99,9 @@ services:
     ports:
         - "2000:8000"
 HERE
+echo "wrote docker compose file for browzer to $SCRIPT_DIR/browzer-compose.yml"
+}
+generateBrowzerComposeFile
 
 echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
 for id in ${ZITI_BROWZER_IDENTITIES}; do
