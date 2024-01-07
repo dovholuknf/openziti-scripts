@@ -18,6 +18,10 @@ else
   sudo systemctl restart ziti-router
 fi
 
+echo "make sure important keycloak directories exist and are writable:"
+echo "  - /data/docker/keycloak/data"
+echo "  - /data/docker/keycloak/themes"
+
 function generateBrowzerComposeFile() {
 cat > $SCRIPT_DIR/browzer-compose.yml <<HERE
 version: "3.3"
@@ -29,10 +33,11 @@ services:
 
     volumes:
       - /data/docker/letsencrypt:/etc/letsencrypt
+      - /data/docker/keycloak/data:/opt/keycloak/data
       - /data/docker/keycloak/themes/mytheme:/opt/keycloak/themes/mytheme
     
     ports:
-      - "${KEYCLOAK_PORT}:8443"
+      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
     
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
@@ -43,6 +48,7 @@ services:
       - "--https-certificate-file=${LE_CHAIN}"
       - "--https-certificate-key-file=${LE_KEY}"
       - "--hostname=${KEYCLOAK_BASE}"
+      - "--https-port=${KEYCLOAK_PORT}"
 
   browzer-bootstrapper:
     image: ghcr.io/openziti/ziti-browzer-bootstrapper:latest
