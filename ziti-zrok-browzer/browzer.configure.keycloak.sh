@@ -1,4 +1,4 @@
-function kcadm {  docker compose -f ${SCRIPT_DIR}/${ZITI_BROWZER_DOCKER_PROJECT}.yml exec --project-name ${ZITI_BROWZER_DOCKER_PROJECT} -it browzer-keycloak /opt/keycloak/bin/kcadm.sh $@; }
+function kcadm {  docker compose -f ${SCRIPT_DIR}/${ZITI_BROWZER_DOCKER_PROJECT}.yml exec --project-name ${ZITI_BROWZER_DOCKER_PROJECT} run browzer-keycloak /opt/keycloak/bin/kcadm.sh $@; }
 
 kcadm config credentials \
   --server ${ZITI_BROWZER_OIDC_ADDRESS} \
