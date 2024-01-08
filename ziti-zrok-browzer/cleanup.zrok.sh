@@ -2,7 +2,7 @@ echo "souring env file at $HOME/.ziti/quickstart/$(hostname)/$(hostname).env"
 source $HOME/.ziti/quickstart/$(hostname)/$(hostname).env
 ziti edge login -u $ZITI_USER -p $ZITI_PWD -y $ZITI_EDGE_CTRL_ADVERTISED_HOST_PORT
 
-## cleanup steps
+## cleanup steps.
 export PATH=$PATH:$ZROK_ROOT/bin
 
 echo "disabling services..."
