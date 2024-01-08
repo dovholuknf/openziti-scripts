@@ -44,13 +44,14 @@ func main() {
 		}
 	})
 
-	fmt.Printf("Server listening on port %s...\n", port)
 	if cert != "" && key != "" {
+		fmt.Printf("Server listening on HTTPS port %s...\n", port)
 		err := http.ListenAndServeTLS(":"+port, cert, key, nil)
 		if err != nil {
 			fmt.Println(err)
 		}
 	} else {
+		fmt.Printf("Server listening on HTTP port %s...\n", port)
 		err := http.ListenAndServe(":"+port, nil)
 		if err != nil {
 			fmt.Println(err)
