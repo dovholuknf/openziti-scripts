@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PKCE Tester</title>
+  </head>
+  <body>
+      <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .label {
+            margin-bottom: 5px;
+        }
+
+        .field {
+            margin-bottom: 10px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 600px;
+        }
+    </style>
+    <h1>PKCE Tester</h1>
+	<div>
+		<p>Make sure the urls shown below are accurate. Make sure the client shown is permitted to redirect to this url.</p>
+		<div>For example:
+			<ul>
+				<li>{{.Host}}/index.html</li>
+				<li>{{.Host}}/*</li>
+				<li>*</li>
+			</ul>
+		</div>
+	</div>
+	<hr/>
+    <div class="container">
+        <label for="auth_url" class="label">Auth URL:</label>
+        <input type="text" id="auth_url" class="field" value="{{.AuthURL}}" disabled>
+        <input type="text" id="token_url" class="field" value="{{.TokenURL}}" disabled>
+        <label for="client_id" class="label">Client ID:</label>
+        <input type="text" id="client_id" class="field" value="{{.ClientID}}" disabled>
+    </div>
+    <button id="startButton">Test OAuth Flow</button>
+    <div id="result"></div>
+	<script>	
+        function decodeJWT(jwtInput) {
+            if (!jwtInput) {
+                alert('Please enter a JWT.');
+                return;
+            }
+
+            const jwtParts = jwtInput.split('.');
+
+            if (jwtParts.length !== 3) {
+                alert('Invalid JWT format. A JWT consists of three dot-separated parts.');
+                return;
+            }
+
+            try {
+                const decodedHeader = JSON.parse(atob(jwtParts[0]));
+                const decodedPayload = JSON.parse(atob(jwtParts[1]));
+
+                const decodedResult = {
+                    header: decodedHeader,
+                    payload: decodedPayload,
+                    signature: jwtParts[2],
+                };
+				return JSON.stringify(decodedResult, null, 2);
+                //document.getElementById('decodedResult').textContent = JSON.stringify(decodedResult, null, 2);
+            } catch (error) {
+                alert('Error decoding JWT. Please check if the JWT is valid.');
+                console.error('Error decoding JWT:', error);
+            }
+        }
+	</script>
+    <script>
+		const authorizeEndpoint = document.getElementById('auth_url').value.trim();
+		const tokenEndpoint = document.getElementById('token_url').value.trim();
+		const clientId = document.getElementById('client_id').value.trim();
+        if (window.location.search) {
+            var args = new URLSearchParams(window.location.search);
+            var code = args.get("code");
+
+            if (code) {
+                var xhr = new XMLHttpRequest();
+
+                xhr.onload = function() {
+                    var response = xhr.response;
+                    var message;
+
+                    if (xhr.status == 200) {
+                        message = "Access Token: \n" + decodeJWT(response.access_token);
+                    }
+                    else {
+                        message = "Error: " + response.error_description + " (" + response.error + ")";
+                    }
+
+                    document.getElementById("result").innerHTML = "<pre>"+message+"</pre>";
+                };
+                xhr.responseType = 'json';
+                xhr.open("POST", tokenEndpoint, true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.send(new URLSearchParams({
+                    client_id: clientId,
+                    code_verifier: window.sessionStorage.getItem("code_verifier"),
+                    grant_type: "authorization_code",
+                    redirect_uri: location.href.replace(location.search, ''),
+                    code: code
+                }));
+            }
+        }
+
+        document.getElementById("startButton").onclick = function() {
+            var codeVerifier = generateRandomString(64);
+
+            const challengeMethod = crypto.subtle ? "S256" : "plain"
+
+            Promise.resolve()
+                .then(() => {
+                    if (challengeMethod === 'S256') {
+                        return generateCodeChallenge(codeVerifier)
+                    } else {
+                        return codeVerifier
+                    }
+                })
+                .then(function(codeChallenge) {
+                    window.sessionStorage.setItem("code_verifier", codeVerifier);
+
+                    var redirectUri = window.location.href.split('?')[0];
+                    var args = new URLSearchParams({
+                        response_type: "code",
+                        client_id: clientId,
+                        code_challenge_method: challengeMethod,
+                        code_challenge: codeChallenge,
+                        redirect_uri: redirectUri
+                    });
+                window.location = authorizeEndpoint + "/?" + args;
+            });
+        }
+
+        async function generateCodeChallenge(codeVerifier) {
+            var digest = await crypto.subtle.digest("SHA-256",
+                new TextEncoder().encode(codeVerifier));
+
+            return btoa(String.fromCharCode(...new Uint8Array(digest)))
+                .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+        }
+
+        function generateRandomString(length) {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i = 0; i < length; i++) {
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+
+            return text;
+        }
+
+        if (!crypto.subtle) {
+            document.writeln('<p>' +
+                    '<b>WARNING:</b> The script will fall back to using plain code challenge as crypto is not available.</p>' +
+                    '<p>Javascript crypto services require that this site is served in a <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts">secure context</a>; ' +
+                    'either from <b>(*.)localhost</b> or via <b>https</b>. </p>' +
+                    '<p> You can add an entry to /etc/hosts like "127.0.0.1 public-test-client.localhost" and reload the site from there, enable SSL using something like <a href="https://letsencrypt.org/">letsencypt</a>, or refer to this <a href="https://stackoverflow.com/questions/46468104/how-to-use-subtlecrypto-in-chrome-window-crypto-subtle-is-undefined">stackoverflow article</a> for more alternatives.</p>' +
+                    '<p>If Javascript crypto is available this message will disappear.</p>')
+        }
+    </script>
+  </body>
+</html>
