@@ -88,7 +88,13 @@ services:
   docker-whale:
     image: crccheck/hello-world
     ports:
-        - "2000:8000"
+      - "2000:8000"
+  
+  pkce-tester:
+    image:  dovholuknf/pkce-debugging
+    ports:
+      - 8450:8080
+  
 volumes:
   browzer-keycloak-data:
 HERE
