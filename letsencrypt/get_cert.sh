@@ -14,6 +14,7 @@ wildcard_url=$2
 
 sudo docker run -it --rm --name certbot \
   -v "/data/docker/letsencrypt:/etc/letsencrypt" \
+  -v "$1:/root/.aws/credentials:ro" \
   certbot/certbot certonly -d "*.${wildcard_url}" \
   --manual \
   --preferred-challenges dns \
