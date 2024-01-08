@@ -98,8 +98,8 @@ services:
       - TLS_CERT=${LE_CHAIN}
       - TLS_KEY=${LE_KEY}
       - AUTH_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth
-	    - TOKEN_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
-	    - CLIENT_ID=pkcetest
+      - TOKEN_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
+      - CLIENT_ID=pkcetest
     volumes:
       - /data/docker/letsencrypt:/etc/letsencrypt
   
