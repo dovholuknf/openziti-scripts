@@ -1,6 +1,11 @@
 #PKCE Tester
 a simple docker container that helps with pkce debugging.
 
+### Building
+```
+docker build -t dovholuknf/pkce-debugging .
+```
+
 ### Example Usage
 docker run \
 	--rm \
@@ -8,4 +13,11 @@ docker run \
 	-eCLIENT_ID=pkcetest \
 	-eAUTH_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/auth \
 	-eTOKEN_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/token \
-	openziti/pkce-debugging
+	dovholuknf/pkce-debugging
+	
+### Pushing to Dockerhub
+
+```
+docker tag dovholuknf/pkce-debugging:latest dovholuknf/pkce-debugging:latest
+docker push dovholuknf/pkce-debugging:latest
+```

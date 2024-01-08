@@ -69,7 +69,6 @@
                     signature: jwtParts[2],
                 };
 				return JSON.stringify(decodedResult.payload, null, 2);
-                //document.getElementById('decodedResult').textContent = JSON.stringify(decodedResult, null, 2);
             } catch (error) {
                 alert('Error decoding JWT. Please check if the JWT is valid.');
                 console.error('Error decoding JWT:', error);

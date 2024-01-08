@@ -101,9 +101,9 @@ echo "*******************************************"
 echo "** NEW ENVIRONMENT BEING PROVISIONED NOW **"
 echo "*******************************************"
 echo " "
-docker compose -f $SCRIPT_DIR/browzer-compose.yml --project-name browzer pull
-docker compose -f $SCRIPT_DIR/browzer-compose.yml --project-name browzer down -v
-docker compose -f $SCRIPT_DIR/browzer-compose.yml --project-name browzer up -d
+docker compose -f $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml --project-name ${ZITI_BROWZER_DOCKER_PROJECT} pull
+docker compose -f $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml --project-name ${ZITI_BROWZER_DOCKER_PROJECT} down -v
+docker compose -f $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml --project-name ${ZITI_BROWZER_DOCKER_PROJECT} up -d
 
 echo "waiting for keycloak to come online...."
 wait_for_200="https://keycloak.clint.demo.openziti.org:8446"
