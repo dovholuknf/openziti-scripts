@@ -6,7 +6,7 @@ exitWithError() {
 if [ "$#" -lt 2 ]; then
     exitWithError "Three parameters are required. \
     \n       The first parameter should be the email you want to be notified when the cert is expiring \
-    \n       The second is the domain you want a wildcard cert for\n"
+    \n       The second is the domain you want a wildcard cert for \
     \n       The third is the location of your aws creds\n"
 fi
 
