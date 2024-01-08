@@ -21,7 +21,7 @@ echo "  - /data/docker/keycloak/data"
 echo "  - /data/docker/keycloak/themes"
 
 function generateBrowzerComposeFile() {
-cat > $SCRIPT_DIR/browzer-compose.yml <<HERE
+cat > $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml <<HERE
 version: "3.3"
 services:
   browzer-keycloak:
