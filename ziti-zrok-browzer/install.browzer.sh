@@ -94,6 +94,11 @@ services:
     image:  dovholuknf/pkce-debugging
     ports:
       - 8450:8080
+    environment:
+      - TLS_CERT=${LE_CHAIN}
+      - TLS_KEY=${LE_KEY}
+    volumes:
+      - /data/docker/letsencrypt:/etc/letsencrypt
   
 volumes:
   browzer-keycloak-data:

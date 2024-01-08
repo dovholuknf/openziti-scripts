@@ -32,16 +32,11 @@ kcadm create clients \
 CLIENT_SCOPE_ID=$(kcadm get clients -r ${KEYCLOAK_REALM} | jq -r '.[] | select(.clientId == "'${ZITI_BROWZER_CLIENT_ID}'") | .id')
 kcadm update realms/${KEYCLOAK_REALM}/clients/${CLIENT_SCOPE_ID} --set fullScopeAllowed=false
 
-#kcadm create client-scopes \
-#  -r ${KEYCLOAK_REALM} \
-#  -s name=browZerDemoScope \
-#  -s 'protocol=openid-connect'
-
 kcadm create clients/${CLIENT_SCOPE_ID}/protocol-mappers/models \
   -r ${KEYCLOAK_REALM} \
   -s name=audience-mapping \
   -s protocol=openid-connect \
   -s protocolMapper=oidc-audience-mapper \
-  -s config.\"included.client.audience\"="${ZITI_BROWZER_CLIENT_ID}" \
+  -s config.\"included.custom.audience\"="${ZITI_CONTROLLER_HOST}" \
   -s config.\"access.token.claim\"=\"true\" \
   -s config.\"id.token.claim\"=\"false\"
