@@ -10,20 +10,20 @@ docker build -t dovholuknf/pkce-debugging .
 docker run \
 	--rm \
 	-p 8080:8080 \
-	-eCLIENT_ID=pkcetest \
 	-eAUTH_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/auth \
 	-eTOKEN_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/token \
+	-eCLIENT_ID=pkcetest \
 	dovholuknf/pkce-debugging
 	
 -- or HTTPS with LetsEncrypt --
 docker run \
 	--rm \
 	-p 8080:8080 \
+	-eAUTH_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/auth \
+	-eTOKEN_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/token \
 	-eCLIENT_ID=pkcetest \
 	-eTLS_CERT=/etc/letsencrypt/live/clint.demo.openziti.org/fullchain.pem \
 	-eTLS_KEY=/etc/letsencrypt/live/clint.demo.openziti.org/privkey.pem \
-	-eAUTH_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/auth \
-	-eTOKEN_URL=https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm/protocol/openid-connect/token \
 	-v/data/docker/letsencrypt:/etc/letsencrypt \
 	dovholuknf/pkce-debugging
 
