@@ -99,7 +99,7 @@ services:
       - TLS_KEY=${LE_KEY}
       - AUTH_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth
       - TOKEN_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
-      - CLIENT_ID=pkcetest
+      - CLIENT_ID=${ZITI_BROWZER_CLIENT_ID}
     volumes:
       - /data/docker/letsencrypt:/etc/letsencrypt
   

@@ -40,3 +40,5 @@ kcadm create clients/${CLIENT_SCOPE_ID}/protocol-mappers/models \
   -s config.\"included.custom.audience\"="${ZITI_CONTROLLER_HOST}" \
   -s config.\"access.token.claim\"=\"true\" \
   -s config.\"id.token.claim\"=\"false\"
+
+
