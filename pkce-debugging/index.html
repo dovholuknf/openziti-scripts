@@ -2,11 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Public Client Sample</title>
+    <title>Public Client Sampleaaa</title>
   </head>
   <body>
+      <style>
+        /* Apply flex styles to the container */
+        .container {
+            display: flex;
+            flex-direction: column; /* Stack children vertically */
+            align-items: flex-start; /* Align children to the start (left) */
+        }
+
+        /* Style for the label */
+        .label {
+            margin-bottom: 5px; /* Add some spacing between label and field */
+        }
+
+        /* Style for the field */
+        .field {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 600px; /* Adjust the width as needed */
+        }
+    </style>
     <h1>Public Client Sample</h1>
-	<input type="text" id="oidc_endpoint" value="https://keycloak.clint.demo.openziti.org:8446/realms/demo/.well-known/openid-configuration" />
+    <div class="container">
+        <label for="auth_url" class="label">Auth URL:</label>
+        <input type="text" id="auth_url" class="field" value="https://keycloak.clint.demo.openziti.org:8446/realms/demo/protocol/openid-connect/auth">
+        <label for="token_url" class="label">Token URL:</label>
+        <input type="text" id="token_url" class="field" value="https://keycloak.clint.demo.openziti.org:8446/realms/demo/protocol/openid-connect/token">
+        <label for="client_id" class="label">Client ID:</label>
+        <input type="text" id="client_id" class="field" value="testclient">
+    </div>
     <button id="startButton">Start OAuth Flow</button>
     <div id="result"></div>
 	<script>
@@ -42,9 +70,14 @@
         }
 	</script>
     <script>
+    const authorizeEndpointa = "https://keycloak.clint.demo.openziti.org:8446/realms/demo/protocol/openid-connect/auth";
+    const tokenEndpointa = "https://keycloak.clint.demo.openziti.org:8446/realms/demo/protocol/openid-connect/token";
+    //const clientId = "testclient";
+    const authorizeEndpoint = document.getElementById('auth_url').value.trim();
+    const tokenEndpoint = document.getElementById('token_url').value.trim();
+    const clientId = document.getElementById('client_id').value.trim();
+
         if (window.location.search) {
-			const tokenEndpoint = "https://keycloak.clint.demo.openziti.org:8446/realms/demo/protocol/openid-connect/token";
-			const clientId = "testclient";
             var args = new URLSearchParams(window.location.search);
             var code = args.get("code");
 
@@ -56,16 +89,13 @@
                     var message;
 
                     if (xhr.status == 200) {
-                        message = "Access Token: \n" + JSON.stringify(response, null, 2);
-						decodedJWT = decodeJWT(response.access_token);
-                        //message = "Access Token: " + response.access_token;
+                        message = "Access Token: \n" + decodeJWT(response.access_token);
                     }
                     else {
                         message = "Error: " + response.error_description + " (" + response.error + ")";
                     }
 
-                    document.getElementById("result").innerHTML = "<pre style=\"white-space: pre-wrap;\">" 
-						+ message + "\n\nDecoded JWT:\n" + decodedJWT + "</pre>";
+                    document.getElementById("result").innerHTML = "<pre>"+message+"</pre>";
                 };
                 xhr.responseType = 'json';
                 xhr.open("POST", tokenEndpoint, true);
@@ -81,8 +111,6 @@
         }
 
         document.getElementById("startButton").onclick = function() {
-			const authorizeEndpoint = "https://keycloak.clint.demo.openziti.org:8446/realms/demo/protocol/openid-connect/auth";
-			const clientId = "testclient";
             var codeVerifier = generateRandomString(64);
 
             const challengeMethod = crypto.subtle ? "S256" : "plain"
