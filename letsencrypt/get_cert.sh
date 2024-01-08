@@ -21,3 +21,18 @@ sudo docker run -it --rm --name certbot \
   --preferred-challenges dns \
   --email "${your_email}" \
   --agree-tos
+
+your_email=clint@openziti.org
+local_dir=/data/docker/letsencrypt
+aws_creds=/home/ubuntu/.aws/credentials
+
+docker run -it --rm --name certbot \
+    -v "${aws_creds}:/root/.aws/credentials:ro" \
+    -v "${local_dir}/letsencrypt:/etc/letsencrypt" \
+    certbot/dns-route53 certonly \
+    -d '*.jan08.demo.openziti.org' \
+    -m "${your_email}" \
+    --dns-route53 \
+    --non-interactive \
+    --agree-tos \
+    --server https://acme-v02.api.letsencrypt.org/directory

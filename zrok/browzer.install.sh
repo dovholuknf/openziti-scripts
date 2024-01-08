@@ -80,7 +80,7 @@ services:
                        "service": "${ZITI_BROWZER_SERVICE}",
                        "path": "/",
                        "scheme": "http",
-                       "idp_issuer_base_url": "${ZITI_BROWZER_OIDC_ADDRESS}",
+                       "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}",
                        "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                        "idp_type": "keycloak",
                        "idp_realm": "${KEYCLOAK_REALM}"
