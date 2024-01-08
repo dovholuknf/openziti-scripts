@@ -43,6 +43,7 @@ export ZITI_BROWZER_VHOST="docker-whale.${WILDCARD_DNS}"
 export ZITI_BROWZER_SERVICE="docker.whale"
 export ZITI_BROWZER_WSS_ER_HOST="wss.${WILDCARD_DNS}"
 export ZITI_BROWZER_IDENTITIES="clint.dovholuk@netfoundry.io curt.tudor@netfoundry.io"
+export ZITI_BROWZER_DOCKER_PROJECT="browzer-compose"
 
 export ZITI_BROWZER_GITHUB_CLIENT=
 export ZITI_BROWZER_GITHUB_CLIENTSECRET=
