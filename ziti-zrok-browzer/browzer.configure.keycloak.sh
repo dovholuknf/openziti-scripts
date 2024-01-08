@@ -37,7 +37,7 @@ kcadm create clients/${CLIENT_SCOPE_ID}/protocol-mappers/models \
   -s name=audience-mapping \
   -s protocol=openid-connect \
   -s protocolMapper=oidc-audience-mapper \
-  -s config.\"included.custom.audience\"="${ZITI_CONTROLLER_HOST}" \
+  -s config.\"included.custom.audience\"="ctrl.${WILDCARD_DNS}" \
   -s config.\"access.token.claim\"=\"true\" \
   -s config.\"id.token.claim\"=\"false\"
 
