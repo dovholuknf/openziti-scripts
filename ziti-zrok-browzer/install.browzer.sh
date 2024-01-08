@@ -1,9 +1,7 @@
 echo "souring env file at $HOME/.ziti/quickstart/$(hostname)/$(hostname).env"
+source $ENV_VAR_FILE
 source $HOME/.ziti/quickstart/$(hostname)/$(hostname).env
 ziti edge login -u $ZITI_USER -p $ZITI_PWD -y $ZITI_EDGE_CTRL_ADVERTISED_HOST_PORT
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-source $SCRIPT_DIR/ziti-zrok-browzer.env
 
 if grep -q "wss:" $HOME/.ziti/quickstart/$(hostname)/$(hostname)-edge-router.yaml; then 
   echo "router config file appears to have web socket listener already: $HOME/.ziti/quickstart/$(hostname)/$(hostname)-edge-router.yaml"
@@ -33,7 +31,7 @@ services:
 
     volumes:
       - /data/docker/letsencrypt:/etc/letsencrypt
-      - /data/docker/keycloak/data:/opt/keycloak/data
+      - browzer-keycloak-data:/opt/keycloak/data
       - /data/docker/keycloak/themes/mytheme:/opt/keycloak/themes/mytheme
     
     ports:
@@ -91,6 +89,8 @@ services:
     image: crccheck/hello-world
     ports:
         - "2000:8000"
+volumes:
+  browzer-keycloak-data:
 HERE
 echo "wrote docker compose file for browzer to $SCRIPT_DIR/browzer-compose.yml"
 }
@@ -101,9 +101,9 @@ echo "*******************************************"
 echo "** NEW ENVIRONMENT BEING PROVISIONED NOW **"
 echo "*******************************************"
 echo " "
-docker compose -f $SCRIPT_DIR/browzer-compose.yml pull
-docker compose -f $SCRIPT_DIR/browzer-compose.yml down -v
-docker compose -f $SCRIPT_DIR/browzer-compose.yml up -d
+docker compose -f $SCRIPT_DIR/browzer-compose.yml --project-name browzer pull
+docker compose -f $SCRIPT_DIR/browzer-compose.yml --project-name browzer down -v
+docker compose -f $SCRIPT_DIR/browzer-compose.yml --project-name browzer up -d
 
 echo "waiting for keycloak to come online...."
 wait_for_200="https://keycloak.clint.demo.openziti.org:8446"

@@ -1,9 +1,7 @@
 echo "souring env file at $HOME/.ziti/quickstart/$(hostname)/$(hostname).env"
+source $ENV_VAR_FILE
 source $HOME/.ziti/quickstart/$(hostname)/$(hostname).env
 ziti edge login -u $ZITI_USER -p $ZITI_PWD -y $ZITI_EDGE_CTRL_ADVERTISED_HOST_PORT
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-source $SCRIPT_DIR/ziti-zrok-browzer.env
 
 advertised_host_port="${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS}:${ZITI_CTRL_EDGE_ADVERTISED_PORT}"
 while [[ "$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null https://"${advertised_host_port}"/edge/client/v1/version)" != "200" ]]; do

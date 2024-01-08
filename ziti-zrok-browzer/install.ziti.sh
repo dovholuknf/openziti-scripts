@@ -1,11 +1,8 @@
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
 echo "sourcing ziti-cli-functions.sh"
 ZITI_CLI_FUNC="https://get.openziti.io/quick/ziti-cli-functions.sh"
 source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
-
 unsetZitiEnv
-source $SCRIPT_DIR/ziti-zrok-browzer.env
+source $ENV_VAR_FILE
 
 echo "Running expressInstall"
 expressInstall
