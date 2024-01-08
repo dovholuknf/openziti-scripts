@@ -90,6 +90,21 @@ services:
     ports:
       - "2000:8000"
   
+  ziti-console:
+    image: openziti/zac
+    working_dir: /usr/src/app
+    environment:
+      - ZAC_SERVER_CERT_CHAIN=/persistent/pki/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-intermediate/certs/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-server.cert
+      - ZAC_SERVER_KEY=/persistent/pki/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-intermediate/keys/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-server.key
+      - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
+      - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
+      - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
+      - PORTTLS=8443
+    ports:
+      - ${ZITI_INTERFACE:-0.0.0.0}:8443:8443
+    volumes:
+      - browzer-ziti-fs:/persistent
+  
   pkce-tester:
     image:  dovholuknf/pkce-debugging
     ports:
@@ -102,9 +117,10 @@ services:
       - CLIENT_ID=${ZITI_BROWZER_CLIENT_ID}
     volumes:
       - /data/docker/letsencrypt:/etc/letsencrypt
-  
+
 volumes:
   browzer-keycloak-data:
+  browzer-ziti-fs:
 HERE
 echo "wrote docker compose file for browzer to $SCRIPT_DIR/browzer-compose.yml"
 }
