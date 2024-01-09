@@ -94,8 +94,6 @@ services:
     image: openziti/zac
     working_dir: /usr/src/app
     environment:
-      - ZAC_SERVER_CERT_CHAIN=${LE_CHAIN}
-      - ZAC_SERVER_KEY=${LE_KEY}
       - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
       - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
       - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
@@ -104,6 +102,8 @@ services:
       - ${ZITI_INTERFACE:-0.0.0.0}:8443:8443
     volumes:
       - browzer-ziti-fs:/persistent
+      - /usr/src/app/server.chain.pem:${LE_CHAIN}
+      - /usr/src/app/server.key:${LE_KEY}
   
   pkce-tester:
     image:  dovholuknf/pkce-debugging
