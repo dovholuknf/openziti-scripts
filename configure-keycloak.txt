@@ -1,0 +1,86 @@
+keycloak_docker_container_name=keycloak8446
+
+# run keycloak in docker, in daemon mode... make sure you set the `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PWD` environment variables
+docker run \
+  -d \
+  --name ${keycloak_docker_container_name} \
+  --user root \
+    -p 8446:8446 \
+    -v /data/docker/letsencrypt:/etc/letsencrypt \
+    -v /data/docker/keycloak/themes/mytheme:/opt/keycloak/themes/mytheme \
+    -e KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER} \
+    -e KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PWD} \
+  quay.io/keycloak/keycloak:23.0.1 start \
+    --https-certificate-file=/etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem \
+    --https-certificate-key-file=/etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem \
+    --hostname=keycloak.${WILDCARD_DNS} \
+    --https-port=8446
+
+function kcadm {
+  docker exec -it ${keycloak_docker_container_name} /opt/keycloak/bin/kcadm.sh $@;
+}
+
+kcadm config credentials \
+  --server ${KEYCLOAK_HOST_AND_PORT} \
+  --realm master \
+  --user ${KEYCLOAK_ADMIN_USER} \
+  --password ${KEYCLOAK_ADMIN_PWD}
+  
+kcadm create realms \
+  -s realm=${KEYCLOAK_REALM} \
+  -s enabled=true
+
+kcadm create clients \
+  -r ${KEYCLOAK_REALM} \
+  -s clientId=${ZITI_BROWZER_CLIENT_ID} \
+  -s protocol=openid-connect \
+  -s 'redirectUris=["https://'${ZITI_BROWZER_VHOST}'/*","https://'${KEYCLOAK_BASE}:${TEST_PORT}'/*","http://localhost:8080/*"]' \
+  -s 'webOrigins=["https://'${ZITI_BROWZER_VHOST}'","https://'${KEYCLOAK_BASE}:${TEST_PORT}'","http://localhost:8080"]' \
+  -s 'directAccessGrantsEnabled=true'
+
+CLIENT_SCOPE_ID=$(kcadm get clients -r ${KEYCLOAK_REALM} | jq -r '.[] | select(.clientId == "'${ZITI_BROWZER_CLIENT_ID}'") | .id')
+kcadm update realms/${KEYCLOAK_REALM}/clients/${CLIENT_SCOPE_ID} --set fullScopeAllowed=false
+
+kcadm create clients/${CLIENT_SCOPE_ID}/protocol-mappers/models \
+  -r ${KEYCLOAK_REALM} \
+  -s name=audience-mapping \
+  -s protocol=openid-connect \
+  -s protocolMapper=oidc-audience-mapper \
+  -s config.\"included.custom.audience\"="ctrl.${WILDCARD_DNS}" \
+  -s config.\"access.token.claim\"=\"true\" \
+  -s config.\"id.token.claim\"=\"false\"
+
+NEW_USER_NAME=testuser
+NEW_USER_PWD=testpwd
+kcadm create users \
+  -r ${KEYCLOAK_REALM} \
+  -s username=${NEW_USER_NAME} \
+  -s enabled=true
+kcadm set-password \
+  -r ${KEYCLOAK_REALM} \
+  --username ${NEW_USER_NAME} \
+  --new-password ${NEW_USER_PWD}
+
+TEST_PORT=8080
+
+# OPTIONAL: -- enable IdPs -- you MUST provide the client id and secret
+
+kcadm create identity-provider/instances \
+  -r ${KEYCLOAK_REALM} \
+  -s alias=github-oidc \
+  -s providerId=github \
+  -s enabled=true \
+  -s 'config.useJwksUrl="true"' \
+  -s config.clientId=${ZITI_BROWZER_GITHUB_CLIENT} \
+  -s config.clientSecret=${ZITI_BROWZER_GITHUB_CLIENTSECRET}
+
+  kcadm create identity-provider/instances \
+  -r ${KEYCLOAK_REALM} \
+  -s alias=google-oidc \
+  -s providerId=google \
+  -s enabled=true \
+  -s 'config.useJwksUrl="true"' \
+  -s config.clientId=${ZITI_BROWZER_GOOGLE_CLIENT} \
+  -s config.clientSecret=${ZITI_BROWZER_GOOGLE_CLIENTSECRET}
+
+
