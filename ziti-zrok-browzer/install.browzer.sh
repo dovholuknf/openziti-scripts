@@ -111,6 +111,7 @@ services:
       - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
       - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
       - PORTTLS=8443
+      - ALLOW_HTTP=true
     ports:
       - ${ZITI_INTERFACE:-0.0.0.0}:8443:8443
     volumes:
