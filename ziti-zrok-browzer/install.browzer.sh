@@ -184,5 +184,7 @@ echo "adding router $(hostname)-edge-router as docker.whale.binders"
 ziti edge update identity "$(hostname)-edge-router" -a docker.whale.binders,brozac.binders
 
 source $SCRIPT_DIR/docker.whale
+createService
 
+source $SCRIPT_DIR/brozac
 createService
