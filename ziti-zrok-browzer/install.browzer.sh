@@ -176,12 +176,12 @@ echo "auth policy id: $auth_policy"
 
 echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
 for id in ${ZITI_BROWZER_IDENTITIES}; do
-  ziti edge create identity user "${id}" --auth-policy ${auth_policy} --external-id "${id}" -a docker.whale.dialers
+  ziti edge create identity user "${id}" --auth-policy ${auth_policy} --external-id "${id}" -a docker.whale.dialers,brozac.dialers
 done
 
 
 echo "adding router $(hostname)-edge-router as docker.whale.binders"
-ziti edge update identity "$(hostname)-edge-router" -a docker.whale.binders
+ziti edge update identity "$(hostname)-edge-router" -a docker.whale.binders,brozac.binders
 
 source $SCRIPT_DIR/docker.whale
 
