@@ -114,6 +114,7 @@ services:
       - ALLOW_HTTP=true
     ports:
       - ${ZITI_INTERFACE:-0.0.0.0}:8443:8443
+      - ${ZITI_INTERFACE:-0.0.0.0}:1408:1408
     volumes:
       - browzer-ziti-fs:/persistent
       - ${LE_CHAIN}:/usr/src/app/server.chain.pem
