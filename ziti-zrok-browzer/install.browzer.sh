@@ -73,7 +73,8 @@ services:
       ZITI_BROWZER_BOOTSTRAPPER_SCHEME: https
       ZITI_BROWZER_BOOTSTRAPPER_TARGETS: >
           {
-            "targetArray": [{
+            "targetArray": [
+            {
                        "vhost": "${ZITI_BROWZER_VHOST}",
                        "service": "${ZITI_BROWZER_SERVICE}",
                        "path": "/",
@@ -82,7 +83,18 @@ services:
                        "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                        "idp_type": "keycloak",
                        "idp_realm": "${KEYCLOAK_REALM}"
-            }]
+            },
+            {
+                      "vhost": "brozac",
+                      "service": "brozac",
+                      "path": "/",
+                      "scheme": "http",
+                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}",
+                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
+                      "idp_type": "keycloak",
+                      "idp_realm": "${KEYCLOAK_REALM}"
+            }
+            ]
           }
 
   docker-whale:
