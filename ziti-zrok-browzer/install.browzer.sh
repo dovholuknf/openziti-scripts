@@ -110,11 +110,11 @@ services:
       - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
       - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
       - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
-      - PORTTLS=8443
+      - PORTTLS=${ZITI_CONSOLE_HTTPS_PORT}
       - ALLOW_HTTP=true
     ports:
-      - ${ZITI_INTERFACE:-0.0.0.0}:8443:8443
-      - ${ZITI_INTERFACE:-0.0.0.0}:1408:1408
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_CONSOLE_HTTP_PORT}:1408
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_CONSOLE_HTTPS_PORT}:8443
     volumes:
       - browzer-ziti-fs:/persistent
       - ${LE_CHAIN}:/usr/src/app/server.chain.pem
