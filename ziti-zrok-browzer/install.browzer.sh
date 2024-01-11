@@ -85,7 +85,7 @@ services:
                        "idp_realm": "${KEYCLOAK_REALM}"
             },
             {
-                      "vhost": "brozac",
+                      "vhost": "brozac.${WILDCARD_DNS}",
                       "service": "brozac",
                       "path": "/",
                       "scheme": "http",
