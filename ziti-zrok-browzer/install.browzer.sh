@@ -92,6 +92,7 @@ services:
   
   ziti-console:
     image: openziti/zac
+    user: root
     working_dir: /usr/src/app
     environment:
       - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
@@ -147,38 +148,19 @@ sleep 1
 echo "configuring keycloak for OpenZiti and Browzer"
 $SCRIPT_DIR/browzer.configure.keycloak.sh
 
-
-
-ZITI_BROWZER_OIDC_URL=https://auth.keycloak.icebear.store:1234/realms/idn
-ZITI_BROWZER_CLIENT_ID=customaud
-
 echo "configuring OpenZiti for BrowZer..."
-ziti_object_prefix=browzer-keycloak-clint
+ziti_object_prefix=browzer-keycloak
 issuer=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .issuer)
 jwks=$(curl -s ${ZITI_BROWZER_OIDC_URL}/.well-known/openid-configuration | jq -r .jwks_uri)
 
 echo "OIDC issuer   : $issuer"
 echo "OIDC jwks url : $jwks"
 
-
-ziti edge delete identity zf101529@gmail.com
-ziti edge delete auth-policy ${ziti_object_prefix}-auth-policy
-ziti edge delete ext-jwt-signer ${ziti_object_prefix}-ext-jwt-signer
-
 ext_jwt_signer=$(ziti edge create ext-jwt-signer "${ziti_object_prefix}-ext-jwt-signer" "${issuer}" --jwks-endpoint "${jwks}" --audience "${ZITI_BROWZER_CLIENT_ID}" --claims-property email)
 echo "ext jwt signer id: $ext_jwt_signer"
 
 auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer})
 echo "auth policy id: $auth_policy"
-
-ziti edge create identity user "zf101529@gmail.com" --auth-policy ${auth_policy} --external-id "zf101529@gmail.com" -a brozac.dialers
-
-
-
-
-echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
-for id in ${ZITI_BROWZER_IDENTITIES}; do
-done
 
 echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
 for id in ${ZITI_BROWZER_IDENTITIES}; do
