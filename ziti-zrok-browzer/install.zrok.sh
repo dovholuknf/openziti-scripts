@@ -115,6 +115,8 @@ ZROK_FRONTEND_ID=$(grep "zrok admin create" /tmp/zrok.admin.bootstrap.output | c
 #read ZROK_FRONTEND_ID
 
 echo "using ZROK_FRONTEND_ID: ${ZROK_FRONTEND_ID}"
+sudo mkdir -p /root/.zrok/identities
+sudo cp $HOME/.zrok/identities/public.json /root/.zrok/identities/public.json
 
 sudo tee /etc/systemd/system/zrok-controller.service > /dev/null << HERE
 [Unit]
