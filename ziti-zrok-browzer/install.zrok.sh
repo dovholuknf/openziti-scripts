@@ -149,7 +149,7 @@ zrok admin create frontend ${ZROK_FRONTEND_ID} public https://{token}.${WILDCARD
 
 
 cat > $ZROK_ROOT/http-frontend.yml << HERE
-v: 3gi
+v: 3
 host_match: ${WILDCARD_DNS}
 address: 0.0.0.0:${ZROK_FRONTEND_PORT}
 HERE
