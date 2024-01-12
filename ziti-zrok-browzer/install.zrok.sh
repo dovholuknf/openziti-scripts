@@ -90,7 +90,7 @@ store:
   path:             $ZROK_ROOT/zrok.db
   type:             sqlite3
 ziti:
-  api_endpoint:     "https://${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS}:${ZITI_CTRL_EDGE_ADVERTISED_PORT}"
+  api_endpoint:     "https://ctrl.${WILDCARD_DNS}:${ZITI_CTRL_EDGE_ADVERTISED_PORT}"
   username:         "${ZITI_USER}"
   password:         "${ZITI_PWD}"
 invites:
@@ -149,7 +149,7 @@ zrok admin create frontend ${ZROK_FRONTEND_ID} public https://{token}.${WILDCARD
 
 
 cat > $ZROK_ROOT/http-frontend.yml << HERE
-v: 3
+v: 3gi
 host_match: ${WILDCARD_DNS}
 address: 0.0.0.0:${ZROK_FRONTEND_PORT}
 HERE
