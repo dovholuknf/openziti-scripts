@@ -21,6 +21,9 @@ echo "  - /data/docker/keycloak/data"
 echo "  - /data/docker/keycloak/themes"
 
 function generateBrowzerComposeFile() {
+if [[ "${ZITI_BROWZER_PORT}" != "" && "${ZITI_BROWZER_PORT}" != "443" ]]; then
+  _ZITI_BROWZER_PORT=":${ZITI_BROWZER_PORT-}"
+fi
 cat > $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml <<HERE
 version: "3.3"
 services:
@@ -75,7 +78,7 @@ services:
           {
             "targetArray": [
             {
-                       "vhost": "${ZITI_BROWZER_VHOST}",
+                       "vhost": "${ZITI_BROWZER_VHOST}${_ZITI_BROWZER_PORT}",
                        "service": "${ZITI_BROWZER_SERVICE}",
                        "path": "/",
                        "scheme": "http",
@@ -85,7 +88,7 @@ services:
                        "idp_realm": "${KEYCLOAK_REALM}"
             },
             {
-                      "vhost": "brozac.${WILDCARD_DNS}",
+                      "vhost": "brozac.${WILDCARD_DNS}${_ZITI_BROWZER_PORT}",
                       "service": "brozac",
                       "path": "/",
                       "scheme": "http",
