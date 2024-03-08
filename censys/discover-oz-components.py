@@ -206,6 +206,8 @@ def check_if_https_server(ip, port, timeout=5):
             return f"HTTP\tzrok ui matched: zrok"
         if "zrok.png" in body:
             return f"HTTP\tzrok.png matched: zrok"
+        if "OpenZiti BrowZer Bootstrapper" in body:
+            return f"HTTP\tbrowzer-bootstrapper"
 
         return f"HTTP\tnon-ziti-related"
 

@@ -81,19 +81,21 @@ if __name__ == "__main__":
                     api_secret = value
         current_date = datetime.now().strftime("%Y-%m-%d")
         query = (
-            "(services.http.response.headers.Server: ziti-controller "
-            "or services.http.response.html_title: \"Open Ziti Console\" "
-            "or services.http.response.html_title: \"Ziti Admin Console\" "
-            "or services.http.response.html_title: \"Ziti Login\" "
-            "or services.tls.certificates.leaf_data.issuer_dn:\"OU=ADV-DEV\" "
-            "or services.tls.certificates.leaf_data.issuer.organizational_unit:\"ADV-DEV\" "
-            "or services.http.response.headers: (key:\"X-Ziti-BrowZer\")) "
-            "and not services.tls.certificates.leaf_data.names:\"netfoundry.io\""
+            "(services.http.response.headers.Server: ziti-controller"
+            " or services.http.response.html_title: \"Open Ziti Console\""
+            " or services.http.response.html_title: \"Ziti Admin Console\""
+            " or services.http.response.html_title: \"Ziti Login\""
+            " or services.tls.certificates.leaf_data.issuer_dn:\"OU=ADV-DEV\""
+            " or services.tls.certificates.leaf_data.issuer.organizational_unit:\"ADV-DEV\""
+            " or services.http.response.headers: (key:\"X-Ziti-BrowZer\"))"
+            " or services.http.response.headers: (key:\"X-Ziti-BrowZer\"))"
+            " and not services.tls.certificates.leaf_data.names:\"netfoundry.io\""
             #" and not services.port: {22}"
             #" and not services.transport_protocol: \"udp\""
         )
         nfquery = (
             "services.tls.certificates.leaf_data.names:\"netfoundry.io\""
+            " or services.tls.certificates.leaf_data.names:\"cloudziti.io\""
             #" and not services.port: {22}"
             #" and not services.transport_protocol: \"udp\""
         )
