@@ -195,10 +195,17 @@ def check_if_https_server(ip, port, timeout=5):
         if any(k.lower() == 'server' and v.lower().startswith('ziti-controller') for k, v in headers.items()):
             return f"HTTP\tziti-controller REST API"
 
+        if any(k.lower() == 'server' and v.lower().startswith('ziti-browzer') for k, v in headers.items()):
+            return f"HTTP\tziti-browzer-bootstrapper"
+
         if "ziti login" in body:
             return f"HTTP\tziti-admin-console matched: ziti login"
         if "ziti console" in body:
             return f"HTTP\tziti-admin-console matched: ziti console"
+        if "zrok ui" in body:
+            return f"HTTP\tzrok ui matched: zrok"
+        if "zrok.png" in body:
+            return f"HTTP\tzrok.png matched: zrok"
 
         return f"HTTP\tnon-ziti-related"
 
