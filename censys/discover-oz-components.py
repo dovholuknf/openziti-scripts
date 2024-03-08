@@ -68,6 +68,49 @@ def subject_or_issuer_contain_ziti_cert(cert_bytes):
     #        print(f"- {san}")
 
 
+def enumerate_sans(ip, port, timeout=3):
+    try:
+        certificate_chain = connect_and_get_certificate_chain(ip, port, 3)
+        if certificate_chain:
+            # print("Peer certificate (including chain):")
+            certificate = crypto.load_certificate(crypto.FILETYPE_ASN1, certificate_chain)
+
+            subject = certificate.get_subject().get_components()
+            issuer = certificate.get_issuer().get_components()
+
+            # # Convert bytes to strings
+            # subject_str = {k.decode(): v.decode() for k, v in subject}
+            # issuer_str = {k.decode(): v.decode() for k, v in issuer}
+            # print("Subject:", subject_str)
+            # print("Issuer:", issuer_str)
+            #
+            # subject = certificate.get_subject()
+            # issuer = certificate.get_issuer()
+            # print("Subject:", subject)
+            # print("Issuer:", issuer)
+
+            # Extract and print Subject Alternative Names (SANs)
+            san_list = []
+            for i in range(certificate.get_extension_count()):
+                ext = certificate.get_extension(i)
+                if 'subjectAltName' in ext.get_short_name().decode('utf-8'):
+                    return ext
+                    #san_list = [s.strip() for s in str(ext).split(",")]
+                    #break
+
+            # if san_list:
+            #     # print("Subject Alternative Names (SANs):")
+            #     for san in san_list:
+            #         print(f"- {san}")
+        else:
+            print("no cert chain?")
+
+    except socket.error as e:
+        print(f"Socket error: {e}")
+    except Exception as e:
+        print(f"Errobr: {ip}:{port} - {e}")
+
+
 def subject_or_issuer_contain_ziti(ip, port, timeout=3):
     try:
         certificate_chain = connect_and_get_certificate_chain(ip, port, 3)
@@ -175,7 +218,8 @@ def process_censys_hit(hit):
     for service in hit["services"]:
         port = service["port"]
         result = check_if_https_server(ip, port, 3)
-        line = f"{ip}\t{port}\t{result}\t{country}\t{city}\t{latitude}\t{longitude}"
+        sans = enumerate_sans(ip, port, 3)
+        line = f"{ip}\t{port}\t{result}\t{country}\t{city}\t{latitude}\t{longitude}\t{sans}"
         lines.append(line)
         # print(f"line appended: {line}")
 
@@ -194,6 +238,8 @@ def process_censys_json(json_data):
 
 
 if __name__ == "__main__":
+    # enumerate_sans("35.234.69.11", "30250", 5)
+    # exit(1)
     current_date = datetime.now().strftime("%Y-%m-%d")
     try:
         filename = sys.argv[1]
