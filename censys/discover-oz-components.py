@@ -20,9 +20,9 @@ def connect_and_get_certificate_chain(host, port, timeout=3):
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    ssl_sock = context.wrap_socket(sock, server_hostname=host)
 
     # Get the peer certificate (including the chain)
+    ssl_sock = context.wrap_socket(sock, server_hostname=host)
     try:
         cert_chain = ssl_sock.getpeercert(True)
         return cert_chain
@@ -143,6 +143,71 @@ def print_certificate_info2(ip, port, timeout=3):
         print(f"Errora: {e}")
 
 
+def check_dns(ssock, host):
+    # Wrap the socket with SSL/TLS without verifying the certificate
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+
+    # Get the peer certificate (including the chain)
+    #ssl_sock = context.wrap_socket(sock, server_hostname=host)
+    try:
+        cert_chain = ssock.getpeercert(True)
+        if cert_chain:
+            # print("Peer certificate (including chain):")
+            certificate = crypto.load_certificate(crypto.FILETYPE_ASN1, cert_chain)
+
+            subject = certificate.get_subject().get_components()
+            issuer = certificate.get_issuer().get_components()
+
+            # # Convert bytes to strings
+            # subject_str = {k.decode(): v.decode() for k, v in subject}
+            # issuer_str = {k.decode(): v.decode() for k, v in issuer}
+            # print("Subject:", subject_str)
+            # print("Issuer:", issuer_str)
+            #
+            # subject = certificate.get_subject()
+            # issuer = certificate.get_issuer()
+            # print("Subject:", subject)
+            # print("Issuer:", issuer)
+
+            # Extract and print Subject Alternative Names (SANs)
+            san_list = []
+            for i in range(certificate.get_extension_count()):
+                ext = certificate.get_extension(i)
+                if 'subjectAltName' in ext.get_short_name().decode('utf-8'):
+                    dns_str = str(ext)
+                    #print(dns_str)
+                    if "controller" in dns_str:
+                        return f"no ALPN\tcontains controller. likely controller port"
+                    if "router" in dns_str:
+                        return f"no ALPN\tcontains router. likely router port"
+                    if "zrok" in dns_str:
+                        return f"no ALPN\tcontains zrok. possible zrok"
+                    if "control" in dns_str:
+                        return f"no ALPN\tcontains control. likely controller port"
+                    if "ctrl" in dns_str:
+                        return f"no ALPN\tcontains ctrl. possible ziti-controller"
+                    if "ctl" in dns_str:
+                        return f"no ALPN\tcontains ctl. possible ziti-controller"
+
+                    # san_list = [s.strip() for s in str(ext).split(",")]
+                    # break
+
+            # if san_list:
+            #     # print("Subject Alternative Names (SANs):")
+            #     for san in san_list:
+            #         print(f"- {san}")
+        else:
+            print("no cert chain?")
+    except ssl.SSLError as e:
+        print(f"Error retrieving certificate chain: {e}")
+    except Exception as e:
+        print(f"Errobr: {host} - {e}")
+
+    return f"no ALPN\tunable to qualify. likely router or controller port"
+
+
 def check_alpn(ip, port, timeout):
     if port == 22:
         return "Skipping\tSSH Port 22"  # Skip port 22
@@ -167,10 +232,11 @@ def check_alpn(ip, port, timeout):
                         return f"ALPN\t{negotiated_protocol} - data plane"
                     return f"ALPN\t{negotiated_protocol} but not matched?"
                 else:
-                    if subject_or_issuer_contain_ziti(ip, port, timeout):
-                        return f"no ALPN\tlikely older ziti-router"
-                    else:
-                        return f"no ALPN"
+                    # if subject_or_issuer_contain_ziti(ip, port, timeout):
+                    #     return check_dns(ssock, ip) #f"no ALPN\tlikely older ziti-router"
+                    # else:
+                    #     return f"no ALPN"
+                    return check_dns(ssock, ip) #f"no ALPN\tlikely older ziti-router"
     except ConnectionRefusedError as e:
         return f"Conn Refused\t{e}"
     except socket.timeout as e:
@@ -178,11 +244,19 @@ def check_alpn(ip, port, timeout):
     except (ssl.SSLError, socket.error) as e:
         if "WRONG_VERSION_NUMBER" in str(e):
             return f"Not TLS\t{e}"
+        if "SSLV3_ALERT_HANDSHAKE_FAILURE" in str(e):
+            reversedIp = socket.getnameinfo((ip, 0), 0)[0]
+            if reversedIp != ip:
+                return check_if_https_server(reversedIp, port, timeout)
+            else:
+                return "DO MANUALLY"
+            #addr=reversename.from_address(ip)
+            #return str(resolver.query(addr,"PTR")[0])
         else:
             return f"SSLError\t{e}"
 
 
-def check_if_https_server(ip, port, timeout=5):
+def check_if_https_server(ip, port, timeout):
     url = f"https://{ip}:{port}"
 
     try:
@@ -194,6 +268,9 @@ def check_if_https_server(ip, port, timeout=5):
 
         if any(k.lower() == 'server' and v.lower().startswith('ziti-controller') for k, v in headers.items()):
             return f"HTTP\tziti-controller REST API"
+
+        if any(k.lower().startswith('x-ziti-browzer-bootstrapper') for k, v in headers.items()):
+            return f"HTTP\tziti-browzer-bootstrapper"
 
         if any(k.lower() == 'server' and v.lower().startswith('ziti-browzer') for k, v in headers.items()):
             return f"HTTP\tziti-browzer-bootstrapper"
@@ -209,10 +286,12 @@ def check_if_https_server(ip, port, timeout=5):
         if "OpenZiti BrowZer Bootstrapper" in body:
             return f"HTTP\tbrowzer-bootstrapper"
 
+        print(headers)
+        print(body)
         return f"HTTP\tnon-ziti-related"
 
     except requests.RequestException as e:
-        return check_alpn(ip, port, 5)
+        return check_alpn(ip, port, timeout)
 
 
 def process_censys_hit(hit):
@@ -248,6 +327,11 @@ def process_censys_json(json_data):
 
 if __name__ == "__main__":
     # enumerate_sans("35.234.69.11", "30250", 5)
+    # exit(1)
+    # r = check_alpn("3.83.237.25", "443", 5)
+    # print(r)
+    # r = check_alpn("99.83.137.128","443", 5)
+    # print(r)
     # exit(1)
     current_date = datetime.now().strftime("%Y-%m-%d")
     try:

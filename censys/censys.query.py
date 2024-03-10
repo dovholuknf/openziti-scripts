@@ -87,7 +87,7 @@ if __name__ == "__main__":
             " or services.http.response.html_title: \"Ziti Login\""
             " or services.tls.certificates.leaf_data.issuer_dn:\"OU=ADV-DEV\""
             " or services.tls.certificates.leaf_data.issuer.organizational_unit:\"ADV-DEV\""
-            " or services.http.response.headers: (key:\"X-Ziti-BrowZer\"))"
+            " or services.http.response.headers.Server: ziti-browzer-bootstrapper"
             " or services.http.response.headers: (key:\"X-Ziti-BrowZer\"))"
             " and not services.tls.certificates.leaf_data.names:\"netfoundry.io\""
             #" and not services.port: {22}"
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         )
 
         process_censys_data(current_date, api_id, api_secret, "censys-data", query)
-        process_censys_data(current_date, api_id, api_secret, "censys-data-nf", nfquery)
+        #process_censys_data(current_date, api_id, api_secret, "censys-data-nf", nfquery)
         #process_censys_data(current_date, api_id, api_secret, "censys-ziti-controller", "services.http.response.headers.Server: ziti-controller and not services.tls.certificates.leaf_data.names:\"netfoundry.io\"")
         #process_censys_data(current_date, api_id, api_secret, "censys-zac", "services.http.response.html_title: \"Open Ziti Console\" or services.http.response.html_title: \"Ziti Admin Console\" or services.http.response.html_title: \"Ziti Login\"")
         #process_censys_data(current_date, api_id, api_secret, "censys-ziti-routers", "(services.tls.certificates.leaf_data.issuer_dn:\"OU=ADV-DEV\" or services.tls.certificates.leaf_data.issuer.organizational_unit:\"ADV-DEV\") and not (services.http.response.headers.Server: ziti-controller and not services.tls.certificates.leaf_data.names:\"netfoundry.io\") and not (services.http.response.html_title: \"Open Ziti Console\" or services.http.response.html_title: \"Ziti Admin Console\" or services.http.response.html_title: \"Ziti Login\")")
