@@ -19,13 +19,14 @@ This will produce two files which are .gitignore'ed by `censys-data`
 2024-03-08.censys-data-nf.json
 ```
 
-process the censys data:
+process the censys data by calling the discover script. if you don't pass a date
+it'll assume today's date. alternatively you can pass a date in yyyy-mm-dd format:
 ```
-python3 discover-oz-components.py 2024-03-08.censys-data
-python3 discover-oz-components.py 2024-03-08.censys-data-nf
+python3 discover-oz-components.py
 ```
 
-you'll be left with two more files that have been processed which will also be ignored:
+Assuming today was 2024-03-08, when done you'll be left with two more files that 
+have been processed which will also be ignored via .gitignore:
 ```
 2024-03-08.censys-data.results.txt
 2024-03-08.censys-data-nf.results.txt

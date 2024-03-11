@@ -7,9 +7,16 @@ from OpenSSL import crypto
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 
 # Suppress only the InsecureRequestWarning from urllib3 needed for SSL warnings
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+def get_certificate_issued_date(ssl_socket):
+    cert = ssl_socket.getpeercert(binary_form=True)
+    x509_cert = x509.load_der_x509_certificate(cert, default_backend())
+    return x509_cert.not_valid_before
 
 
 def connect_and_get_certificate_chain(host, port, timeout=3):
@@ -103,12 +110,12 @@ def enumerate_sans(ip, port, timeout=3):
             #     for san in san_list:
             #         print(f"- {san}")
         else:
-            print("no cert chain?")
+            print(f"{ip}:{port} - no cert chain?")
 
     except socket.error as e:
-        print(f"Socket error: {e}")
+        print(f"{ip}:{port} - Socket error: {e}")
     except Exception as e:
-        print(f"Errobr: {ip}:{port} - {e}")
+        print(f"{ip}:{port} - Errobr: {ip}:{port} - {e}")
 
 
 def subject_or_issuer_contain_ziti(ip, port, timeout=3):
@@ -118,9 +125,9 @@ def subject_or_issuer_contain_ziti(ip, port, timeout=3):
             # print("Peer certificate (including chain):")
             return subject_or_issuer_contain_ziti_cert(certificate_chain)
     except socket.error as e:
-        print(f"Socket error: {e}")
+        print(f"{ip}:{port} - Socket error: {e}")
     except Exception as e:
-        print(f"Errobr: {e}")
+        print(f"{ip}:{port} - Errobr: {e}")
     return False
 
 
@@ -131,19 +138,19 @@ def print_certificate_info2(ip, port, timeout=3):
             print("Peer certificate (including chain):")
             subject_or_issuer_contain_ziti_cert(certificate_chain)
     except socket.error as e:
-        print(f"Socket error: {e}")
+        print(f"{ip}:{port} - Socket error: {e}")
     except Exception as e:
-        print(f"Errobr: {e}")
+        print(f"{ip}:{port} - Errobr: {e}")
 
     try:
         result = check_if_https_server(ip, port, 3)
         print(f"{ip}:{port}\t{result}")
 
     except Exception as e:
-        print(f"Errora: {e}")
+        print(f"{ip}:{port} - Errora: {e}")
 
 
-def check_dns(ssock, host):
+def check_dns(ssock, host, port):
     # Wrap the socket with SSL/TLS without verifying the certificate
     context = ssl.create_default_context()
     context.check_hostname = False
@@ -191,6 +198,18 @@ def check_dns(ssock, host):
                     if "ctl" in dns_str:
                         return f"no ALPN\tcontains ctl. possible ziti-controller"
 
+                    # port based inference
+                    if port == 6262:
+                        return f"no ALPN\tziti-controller default control port - 6262"
+                    if port == 3022:
+                        return f"no ALPN\tziti-router default edge port - 3022"
+                    if port == 10080:
+                        return f"no ALPN\tziti-router default link port - 10080"
+                    if port == 8440:
+                        return f"no ALPN\tziti-router default edge port - 8440"
+                    if port == 8442:
+                        return f"no ALPN\tziti-router quickstart edge port - 8442"
+
                     # san_list = [s.strip() for s in str(ext).split(",")]
                     # break
 
@@ -199,13 +218,13 @@ def check_dns(ssock, host):
             #     for san in san_list:
             #         print(f"- {san}")
         else:
-            print("no cert chain?")
+            print("{ip}:{port} - no cert chain?")
     except ssl.SSLError as e:
-        print(f"Error retrieving certificate chain: {e}")
+        print(f"{host}:{port} - Error retrieving certificate chain: {e}")
     except Exception as e:
-        print(f"Errobr: {host} - {e}")
+        print(f"{host}:{port} - Errobr: {e}")
 
-    return f"no ALPN\tunable to qualify. likely router or controller port"
+    return f"no ALPN\tunable to qualify. likely router or controller port: {port}"
 
 
 def check_alpn(ip, port, timeout):
@@ -223,6 +242,8 @@ def check_alpn(ip, port, timeout):
         with socket.create_connection((ip, port), timeout=timeout) as sock:
             with context.wrap_socket(sock, server_hostname=ip) as ssock:
                 negotiated_protocol = ssock.selected_alpn_protocol()
+                expiration = get_certificate_issued_date(ssock)
+                print(f"expires: {expiration}")
                 if negotiated_protocol:
                     if negotiated_protocol == "ziti-ctrl":
                         return f"ALPN\t{negotiated_protocol} - control plane"
@@ -232,15 +253,11 @@ def check_alpn(ip, port, timeout):
                         return f"ALPN\t{negotiated_protocol} - data plane"
                     return f"ALPN\t{negotiated_protocol} but not matched?"
                 else:
-                    # if subject_or_issuer_contain_ziti(ip, port, timeout):
-                    #     return check_dns(ssock, ip) #f"no ALPN\tlikely older ziti-router"
-                    # else:
-                    #     return f"no ALPN"
-                    return check_dns(ssock, ip) #f"no ALPN\tlikely older ziti-router"
+                    return check_dns(ssock, ip, port)
     except ConnectionRefusedError as e:
-        return f"Conn Refused\t{e}"
+        return f"{ip}:{port} Conn Refused\t{e}"
     except socket.timeout as e:
-        return f"Conn Timeout\t{e}"
+        return f"{ip}:{port} Conn Timeout\t{e}"
     except (ssl.SSLError, socket.error) as e:
         if "WRONG_VERSION_NUMBER" in str(e):
             return f"Not TLS\t{e}"
@@ -286,8 +303,8 @@ def check_if_https_server(ip, port, timeout):
         if "OpenZiti BrowZer Bootstrapper" in body:
             return f"HTTP\tbrowzer-bootstrapper"
 
-        print(headers)
-        print(body)
+        # print(headers)
+        # print(body)
         return f"HTTP\tnon-ziti-related"
 
     except requests.RequestException as e:
@@ -324,6 +341,20 @@ def process_censys_json(json_data):
 
     return results
 
+def process_non_nf_censys(filename):
+    with open(filename + ".json", 'r') as file:
+        with ThreadPoolExecutor(max_workers=16) as executor:
+            # Process lines in parallel and collect the results
+            results = list(executor.map(process_censys_json, file))
+
+    # Now that you have all the results, you can print them without interleaving
+    print("==============================================")
+    with open(filename + ".results.txt", 'w') as outf:
+        for outer_array in results:
+            for middle_array in outer_array:
+                print("\n".join(middle_array), file=outf)
+
+
 
 if __name__ == "__main__":
     # enumerate_sans("35.234.69.11", "30250", 5)
@@ -335,18 +366,14 @@ if __name__ == "__main__":
     # exit(1)
     current_date = datetime.now().strftime("%Y-%m-%d")
     try:
-        filename = sys.argv[1]
-        with open(filename + ".json", 'r') as file:
-            with ThreadPoolExecutor(max_workers=16) as executor:
-                # Process lines in parallel and collect the results
-                results = list(executor.map(process_censys_json, file))
+        filename = ""
+        if len(sys.argv) > 1:
+            filename = sys.argv[1]
 
-        # Now that you have all the results, you can print them without interleaving
-        print("==============================================")
-        with open(filename + ".results.txt", 'w') as outf:
-            for outer_array in results:
-                for middle_array in outer_array:
-                    print("\n".join(middle_array), file=outf)
+        if filename == "":
+            filename = current_date
+        process_non_nf_censys(current_date + ".censys-data")
+        process_non_nf_censys(current_date + ".censys-data-nf")
 
     except KeyboardInterrupt:
         print("exiting...")
