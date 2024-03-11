@@ -92,7 +92,7 @@ services:
                       "service": "brozac",
                       "path": "/",
                       "scheme": "http",
-                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}",
+                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
                       "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                       "idp_type": "keycloak",
                       "idp_realm": "${KEYCLOAK_REALM}"
