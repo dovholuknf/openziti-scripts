@@ -20,8 +20,8 @@ kcadm create clients \
   -r ${KEYCLOAK_REALM} \
   -s clientId=${ZITI_BROWZER_CLIENT_ID} \
   -s protocol=openid-connect \
-  -s 'redirectUris=["https://'${ZITI_BROWZER_VHOST}'/*","https://brozac.'${WILDCARD_DNS}'/*","https://'${KEYCLOAK_BASE}:${TEST_PORT}'/*","http://localhost:8080/*"]' \
-  -s 'webOrigins=["https://'${ZITI_BROWZER_VHOST}'","https://brozac.'${WILDCARD_DNS}'","https://'${KEYCLOAK_BASE}:${TEST_PORT}'","http://localhost:8080"]' \
+  -s 'redirectUris=["https://'${ZITI_BROWZER_VHOST}'/*","https://brozac.'${WILDCARD_DNS}'/*","https://puter.'${WILDCARD_DNS}'/*"]' \
+  -s 'webOrigins=["https://'${ZITI_BROWZER_VHOST}'","https://brozac.'${WILDCARD_DNS}'","https://puter.'${WILDCARD_DNS}'"]' \
   -s 'directAccessGrantsEnabled=true'
 
 CLIENT_SCOPE_ID=$(kcadm get clients -r ${KEYCLOAK_REALM} | jq -r '.[] | select(.clientId == "'${ZITI_BROWZER_CLIENT_ID}'") | .id')
