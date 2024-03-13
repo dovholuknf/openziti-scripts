@@ -78,14 +78,14 @@ services:
           {
             "targetArray": [
             {
-                       "vhost": "${ZITI_BROWZER_VHOST}${_ZITI_BROWZER_PORT}",
-                       "service": "${ZITI_BROWZER_SERVICE}",
-                       "path": "/",
-                       "scheme": "http",
-                       "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}/realms/zitirealm",
-                       "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
-                       "idp_type": "keycloak",
-                       "idp_realm": "${KEYCLOAK_REALM}"
+                      "vhost": "${ZITI_BROWZER_VHOST}${_ZITI_BROWZER_PORT}",
+                      "service": "${ZITI_BROWZER_SERVICE}",
+                      "path": "/",
+                      "scheme": "http",
+                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
+                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
+                      "idp_type": "keycloak",
+                      "idp_realm": "${KEYCLOAK_REALM}"
             },
             {
                       "vhost": "brozac.${WILDCARD_DNS}${_ZITI_BROWZER_PORT}",
@@ -102,10 +102,10 @@ services:
                       "service": "puter",
                       "path": "/",
                       "scheme": "http",
-                      "idp_issuer_base_url": "https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm",
-                      "idp_client_id": "browzerBootstrapClient",
+                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
+                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                       "idp_type": "keycloak",
-                      "idp_realm": "zitirealm"
+                      "idp_realm": "${KEYCLOAK_REALM}"
             }
             ]
           }
