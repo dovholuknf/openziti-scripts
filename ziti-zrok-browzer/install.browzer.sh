@@ -96,6 +96,16 @@ services:
                       "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                       "idp_type": "keycloak",
                       "idp_realm": "${KEYCLOAK_REALM}"
+            },
+            {
+                      "vhost": "puter.clint.demo.openziti.org",
+                      "service": "puter",
+                      "path": "/",
+                      "scheme": "http",
+                      "idp_issuer_base_url": "https://keycloak.clint.demo.openziti.org:8446/realms/zitirealm",
+                      "idp_client_id": "browzerBootstrapClient",
+                      "idp_type": "keycloak",
+                      "idp_realm": "zitirealm"
             }
             ]
           }
