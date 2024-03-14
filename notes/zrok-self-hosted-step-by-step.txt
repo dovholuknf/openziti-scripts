@@ -44,8 +44,8 @@ export ZITI_CTRL_ADVERTISED_PORT=${ZITI_CTRL_PORT}
 export ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_PORT}
 export ZITI_ROUTER_LISTENER_BIND_PORT=${ZITI_ROUTER_PORT}
 export ZITI_EDGE_ROUTER_PORT=${ZITI_ROUTER_PORT}
-export ZITI_EDGE_CONTROLLER_IP_OVERRIDE="${EXTERNAL_IP}"
-export ZITI_EDGE_ROUTER_IP_OVERRIDE="${EXTERNAL_IP}"
+export ZITI_CONTROLLER_IP_OVERRIDE="${EXTERNAL_IP}"
+export ZITI_ROUTER_IP_OVERRIDE="${EXTERNAL_IP}"
 export ZITI_CTRL_EDGE_ADVERTISED_ADDRESS="${EXTERNAL_DNS}"
 export ZITI_ROUTER_ADVERTISED_HOST="${EXTERNAL_DNS}"
 export ZITI_PKI_ALT_SERVER_CERT=${LE_CHAIN}
@@ -68,7 +68,7 @@ sudo systemctl stop ziti-router
 sudo systemctl stop ziti-controller
 
 sudo rm -r /opt/openziti/selfhosted.zrok/
-export ENV_VAR_FILE="/home/ubuntu/git/dovholuknf/openziti-scripts.zititv/zrok.only.env"
+export ENV_VAR_FILE="/home/ubuntu/git/dovholuknf/openziti-scripts/notes/new.env"
 source $ENV_VAR_FILE
 sudo mkdir -p $ZITI_HOME
 sudo chmod -R 777 /opt/openziti/selfhosted.zrok/
