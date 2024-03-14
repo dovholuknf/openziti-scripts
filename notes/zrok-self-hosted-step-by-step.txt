@@ -22,8 +22,7 @@ sudo chmod -R 777 /etc/letsencrypt/
 
 export ZITI_HOME=/opt/openziti/selfhosted.zrok
 export WILDCARD_DNS="zititv.demo.openziti.org"
-export EXTERNAL_DNS="ec2-3-142-245-63.us-east-2.compute.amazonaws.com"
-export EXTERNAL_DNS="${WILDCARD_DNS}"
+#export EXTERNAL_DNS="ec2-3-142-245-63.us-east-2.compute.amazonaws.com"
 
 export ZITI_PWD=________
 export ZROK_ADMIN_PWD=________
@@ -32,9 +31,9 @@ export ZITI_CTRL_PORT=9441
 export ZITI_ROUTER_PORT=9442
 export ZITI_CONSOLE_HTTP_PORT=1409
 export ZITI_CONSOLE_HTTPS_PORT=9443
-export ZROK_CTRL_PORT=9000
-export ZROK_FRONTEND_PORT=9001
-export ZROK_API_PORT=8445
+export ZROK_CTRL_PORT=9444
+export ZROK_FRONTEND_PORT=9445
+export ZROK_API_PORT=9446
 
 export EXTERNAL_IP="$(curl -s ipinfo.io | jq -r .ip)"
 export LE_CHAIN="/etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem"
@@ -108,9 +107,9 @@ sudo systemctl -q status ziti-controller --lines=0 --no-pager
 sudo systemctl -q status ziti-router --lines=0 --no-pager
 
 
-echo "sourcing env file at $HOME/.ziti/quickstart/$(hostname)/$(hostname).env"
+echo "sourcing env file at $ZITI_HOME/$(hostname).env"
 source $ENV_VAR_FILE
-source $HOME/.ziti/quickstart/$(hostname)/$(hostname).env
+source $ZITI_HOME/$(hostname).env
 ziti edge login -u $ZITI_USER -p $ZITI_PWD -y $ZITI_EDGE_CTRL_ADVERTISED_HOST_PORT
 
 
