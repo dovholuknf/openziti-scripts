@@ -236,13 +236,9 @@ HERE
 ${ZROK_BINARY} admin bootstrap $ZROK_ROOT/ctrl.yml 2>&1 | tee /tmp/zrok.admin.bootstrap.output
 
 ZROK_FRONTEND_ID=$(grep "zrok admin create" /tmp/zrok.admin.bootstrap.output | cut -d ";" -f1 | cut -d \' -f2)
-
-
-
 echo "using ZROK_FRONTEND_ID: ${ZROK_FRONTEND_ID}"
-echo "copying identities to /root"
-mkdir -p /root/.zrok/identities
-cp $HOME/.zrok/identities/public.json /root/.zrok/identities/public.json
+
+
 
 tee /etc/systemd/system/zrok-controller.service > /dev/null << HERE
 [Unit]
