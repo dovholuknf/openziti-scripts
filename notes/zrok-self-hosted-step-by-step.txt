@@ -68,7 +68,7 @@ rm -r /home/ubuntu/.zrok/
 rm -r /root/.zrok/
 
 
-export ENV_VAR_FILE="/home/ubuntu/git/dovholuknf/openziti-scripts/notes/new.env"
+export ENV_VAR_FILE="/root/mar15.answers"
 source $ENV_VAR_FILE
 mkdir -p $ZITI_HOME
 
