@@ -194,7 +194,7 @@ if [ -z "${ZROK_ADMIN_TOKEN}" ]; then
 	echo "ZROK_ADMIN_TOKEN was not set. using the ZITI_PWD"
 fi
 
-mkdir -p $ZROK_ROOT/bin
+mkdir -p $ZROK_ROOT
 ZROK_BINARY=$(which zrok)
 
 cat > $ZROK_ROOT/ctrl.yml << HERE
