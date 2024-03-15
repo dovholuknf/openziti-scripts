@@ -234,7 +234,7 @@ HERE
 
 ${ZROK_BINARY} admin bootstrap $ZROK_ROOT/ctrl.yml 2>&1 | tee ${ZROK_ROOT}/zrok.admin.bootstrap.output
 
-ZROK_FRONTEND_ID=$(grep "zrok admin create" /tmp/zrok.admin.bootstrap.output | cut -d ";" -f1 | cut -d \' -f2)
+ZROK_FRONTEND_ID=$(grep "zrok admin create" ${ZROK_ROOT}/zrok.admin.bootstrap.output | cut -d ";" -f1 | cut -d \' -f2)
 echo "using ZROK_FRONTEND_ID: ${ZROK_FRONTEND_ID}"
 
 
