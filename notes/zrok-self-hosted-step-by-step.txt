@@ -2,7 +2,7 @@ USE AT YOUR OWN RISK - this is a demonstration of setting up zrok/ziti
 
 acquire a LE wildcard cert i'm using:
 
-sudo docker run -it --rm \
+docker run -it --rm \
   --name certbot \
   -v "/etc/letsencrypt:/etc/letsencrypt" \
   -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
@@ -13,12 +13,6 @@ sudo docker run -it --rm \
     --email ____@____ \
     --keep \
     --agree-tos 
-
-
-### don't do this -- this is just a demonstration
-sudo chmod -R 777 /etc/letsencrypt/
-
-
 
 export ZITI_HOME=/opt/openziti/selfhosted.zrok
 export WILDCARD_DNS="zititv.demo.openziti.org"
@@ -62,22 +56,21 @@ export ZROK_API_ENDPOINT=http://localhost:${ZROK_CTRL_PORT}
 
 
 
-sudo systemctl stop zrok-controller
-sudo systemctl stop zrok-frontend
-sudo systemctl stop ziti-router
-sudo systemctl stop ziti-controller
-sudo killall ziti
-sudo killall zrok
+systemctl stop zrok-controller
+systemctl stop zrok-frontend
+systemctl stop ziti-router
+systemctl stop ziti-controller
+killall ziti
+killall zrok
 
-sudo rm -r /opt/openziti/selfhosted.zrok/
-sudo rm -r /home/ubuntu/.zrok/
-sudo rm -r /root/.zrok/
+rm -r /opt/openziti/selfhosted.zrok/
+rm -r /home/ubuntu/.zrok/
+rm -r /root/.zrok/
 
 
 export ENV_VAR_FILE="/home/ubuntu/git/dovholuknf/openziti-scripts/notes/new.env"
 source $ENV_VAR_FILE
-sudo mkdir -p $ZITI_HOME
-sudo chmod -R 777 /opt/openziti/selfhosted.zrok/
+mkdir -p $ZITI_HOME
 
 
 echo "sourcing ziti-cli-functions.sh"
@@ -96,21 +89,21 @@ expressInstall
 createControllerSystemdFile
 createRouterSystemdFile "${ZITI_ROUTER_NAME}"
 
-sudo cp "${ZITI_HOME}/${ZITI_NETWORK}.service" /etc/systemd/system/ziti-controller.service
-sudo cp "${ZITI_HOME}/${ZITI_ROUTER_NAME}.service" /etc/systemd/system/ziti-router.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now ziti-controller
-sudo systemctl enable --now ziti-router
-sudo systemctl -q status ziti-controller --lines=0 --no-pager
-sudo systemctl -q status ziti-router --lines=0 --no-pager
+cp "${ZITI_HOME}/${ZITI_NETWORK}.service" /etc/systemd/system/ziti-controller.service
+cp "${ZITI_HOME}/${ZITI_ROUTER_NAME}.service" /etc/systemd/system/ziti-router.service
+systemctl daemon-reload
+systemctl enable --now ziti-controller
+systemctl enable --now ziti-router
+systemctl -q status ziti-controller --lines=0 --no-pager
+systemctl -q status ziti-router --lines=0 --no-pager
 
 curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem >> $ZITI_HOME/pki/cas.pem
 curl -s https://letsencrypt.org/certs/isrgrootx1.pem >> $ZITI_HOME/pki/cas.pem
 
-sudo systemctl restart ziti-controller
-sudo systemctl restart ziti-router
-sudo systemctl -q status ziti-controller --lines=0 --no-pager
-sudo systemctl -q status ziti-router --lines=0 --no-pager
+systemctl restart ziti-controller
+systemctl restart ziti-router
+systemctl -q status ziti-controller --lines=0 --no-pager
+systemctl -q status ziti-router --lines=0 --no-pager
 
 
 echo "sourcing env file at $ZITI_HOME/$(hostname).env"
@@ -129,9 +122,9 @@ echo "ziti controller is running..."
 
 
 
-sudo apt install nginx -y
+apt install nginx -y
 
-sudo tee /etc/nginx/nginx.conf > /dev/null << HERE
+tee /etc/nginx/nginx.conf > /dev/null << HERE
 events {
 }
 http {
@@ -187,8 +180,8 @@ http {
 }
 HERE
 
-sudo nginx -t
-sudo systemctl restart nginx
+nginx -t
+systemctl restart nginx
 
 
 
@@ -248,10 +241,10 @@ ZROK_FRONTEND_ID=$(grep "zrok admin create" /tmp/zrok.admin.bootstrap.output | c
 
 echo "using ZROK_FRONTEND_ID: ${ZROK_FRONTEND_ID}"
 echo "copying identities to /root"
-sudo mkdir -p /root/.zrok/identities
-sudo cp $HOME/.zrok/identities/public.json /root/.zrok/identities/public.json
+mkdir -p /root/.zrok/identities
+cp $HOME/.zrok/identities/public.json /root/.zrok/identities/public.json
 
-sudo tee /etc/systemd/system/zrok-controller.service > /dev/null << HERE
+tee /etc/systemd/system/zrok-controller.service > /dev/null << HERE
 [Unit]
 Description=zrok-controller
 After=network.target
@@ -268,8 +261,8 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 HERE
 
-sudo systemctl daemon-reload
-sudo systemctl enable --now zrok-controller
+systemctl daemon-reload
+systemctl enable --now zrok-controller
 
 echo "wating for ${ZROK_API_ENDPOINT}"
 while [[ "$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null ${ZROK_API_ENDPOINT})" != "200" ]]; do
@@ -288,7 +281,7 @@ host_match: ${WILDCARD_DNS}
 address: 0.0.0.0:${ZROK_FRONTEND_PORT}
 HERE
 
-sudo tee /etc/systemd/system/zrok-frontend.service > /dev/null << HERE
+tee /etc/systemd/system/zrok-frontend.service > /dev/null << HERE
 [Unit]
 Description=zrok-frontend
 After=network.target
@@ -305,8 +298,8 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 HERE
 
-sudo systemctl daemon-reload
-sudo systemctl enable --now zrok-frontend
+systemctl daemon-reload
+systemctl enable --now zrok-frontend
 
 
 echo " "
