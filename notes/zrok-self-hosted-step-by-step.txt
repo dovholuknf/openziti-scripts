@@ -35,7 +35,12 @@ export ZROK_CTRL_PORT=9444
 export ZROK_FRONTEND_PORT=9445
 export ZROK_API_PORT=9446
 
-export EXTERNAL_IP="$(curl -s ipinfo.io | jq -r .ip)"
+export EXTERNAL_IP="$(curl -s eth0.me)"       
+export ZITI_CTRL_EDGE_IP_OVERRIDE="${EXTERNAL_IP}"
+export ZITI_ROUTER_IP_OVERRIDE="${EXTERNAL_IP}"
+export ZITI_CTRL_EDGE_ADVERTISED_ADDRESS="${EXTERNAL_DNS:-${EXTERNAL_IP}}"
+export ZITI_ROUTER_ADVERTISED_ADDRESS="${EXTERNAL_DNS:-${EXTERNAL_IP}}"
+
 export LE_CHAIN="/etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem"
 export LE_KEY="/etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem"
 
@@ -45,8 +50,7 @@ export ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_PORT}
 export ZITI_ROUTER_LISTENER_BIND_PORT=${ZITI_ROUTER_PORT}
 export ZITI_EDGE_ROUTER_PORT=${ZITI_ROUTER_PORT}
 export ZITI_CONTROLLER_IP_OVERRIDE="${EXTERNAL_IP}"
-export ZITI_ROUTER_IP_OVERRIDE="${EXTERNAL_IP}"
-export ZITI_CTRL_EDGE_ADVERTISED_ADDRESS="${EXTERNAL_DNS}"
+
 export ZITI_ROUTER_ADVERTISED_HOST="${EXTERNAL_DNS}"
 export ZITI_PKI_ALT_SERVER_CERT=${LE_CHAIN}
 export ZITI_PKI_ALT_SERVER_KEY=${LE_KEY}
@@ -60,14 +64,18 @@ export ZROK_API_ENDPOINT=http://localhost:${ZROK_CTRL_PORT}
 
 
 
-
-
 sudo systemctl stop zrok-controller
 sudo systemctl stop zrok-frontend
 sudo systemctl stop ziti-router
 sudo systemctl stop ziti-controller
+sudo killall ziti
+sudo killall zrok
 
 sudo rm -r /opt/openziti/selfhosted.zrok/
+sudo rm -r /home/ubuntu/.zrok/
+sudo rm -r /root/.zrok/
+
+
 export ENV_VAR_FILE="/home/ubuntu/git/dovholuknf/openziti-scripts/notes/new.env"
 source $ENV_VAR_FILE
 sudo mkdir -p $ZITI_HOME
@@ -241,6 +249,9 @@ ZROK_FRONTEND_ID=$(grep "zrok admin create" /tmp/zrok.admin.bootstrap.output | c
 
 
 echo "using ZROK_FRONTEND_ID: ${ZROK_FRONTEND_ID}"
+echo "copying identities to /root"
+sudo mkdir -p /root/.zrok/identities
+sudo cp $HOME/.zrok/identities/public.json /root/.zrok/identities/public.json
 
 sudo tee /etc/systemd/system/zrok-controller.service > /dev/null << HERE
 [Unit]
