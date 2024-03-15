@@ -190,7 +190,7 @@ systemctl restart nginx
 
 
 if [ -z "${ZROK_ADMIN_TOKEN}" ]; then
-    ZROK_ADMIN_TOKEN="${ZITI_PWD}"
+    export ZROK_ADMIN_TOKEN="${ZITI_PWD}"
 	echo "ZROK_ADMIN_TOKEN was not set. using the ZITI_PWD"
 fi
 
