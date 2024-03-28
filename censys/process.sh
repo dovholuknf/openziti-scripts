@@ -1,12 +1,10 @@
 #!/bin/bash
 
 grep "ziti-controller REST API" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.ctrl-apis.to.date.txt
-grep "ziti-ctrl - control plane" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.ctrl-plane.to.date.txt
-grep "ziti-edge - data plane" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.edge-routers.to.date.txt
-grep "zit.link .link listener" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.link-listeners.to.date.txt
+grep "ziti-ctrl" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.ctrl-plane.to.date.txt
+grep "ziti-edge" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.edge-routers.to.date.txt
+grep "ziti-link" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.link-listeners.to.date.txt
 grep "zrok ui matched" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.zrok-ui.to.date.txt
-
-#!/bin/bash
 
 # Function to summarize IP appearances in a tab-separated CSV file
 summarize_ip() {
@@ -15,7 +13,6 @@ summarize_ip() {
     # Extract $something from the filename
     local something=$(echo "$filename" | awk -F'[.$]' '{print $2}')
 
-    # Check if file exists
     if [ ! -f "$filename" ]; then
         echo "Error: File '$filename' not found."
         return 1
@@ -67,8 +64,24 @@ split_and_sort_by_date() {
     done < "$input_file"
 }
 
+make_video() {
+  local what="$1"
+  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "output/*${what}*png" -c:v libx264 -pix_fmt yuv420p ${what}-over-time.mp4
+}
+
 split_and_sort_by_date "all.ctrl-apis.to.date.txt"
 split_and_sort_by_date "all.ctrl-plane.to.date.txt"
 split_and_sort_by_date "all.edge-routers.to.date.txt"
 split_and_sort_by_date "all.link-listeners.to.date.txt"
 split_and_sort_by_date "all.zrok-ui.to.date.txt"
+
+# ffmpeg -f image2 -r 25 -pattern_type glob -i '*ctrl-apis*png' -c:v libx264 -pix_fmt yuv420p output.mp4
+# ffmpeg -y -f image2 -r 2 -pattern_type glob -i '*ctrl-apis*png' -c:v libx264 -pix_fmt yuv420p output2.mp4
+
+python3 capture.py
+
+make_video "ctrl-apis"
+make_video "ctrl-plane"
+make_video "edge-routers"
+make_video "link-listeners"
+make_video "zrok-ui"
