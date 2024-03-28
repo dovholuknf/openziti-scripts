@@ -1,2 +1,6 @@
 *.env
 *censys-data*
+summarized*
+all*
+output
+backup
