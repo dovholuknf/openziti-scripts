@@ -1,6 +1,7 @@
 from selenium import webdriver
 import time
 import os
+import glob
 import json
 import requests
 
@@ -45,12 +46,28 @@ def capture_screenshot(url, filename):
 # capture_screenshot(report_url, ip_list_filename + '.png')
 
 output_folder = "./output"
-for file_name in os.listdir(output_folder):
-    file_path = os.path.join(output_folder, file_name)
-    # if os.path.isfile(file_path):
-    #     # Capture screenshot for the URL with the same name as the file
-    #     capture_screenshot(url, file_name)
+file_paths = sorted(glob.glob(os.path.join(output_folder, "*.txt")))
+# for file_path in file_paths:
+#     # if os.path.isfile(file_path):
+#     #     # Capture screenshot for the URL with the same name as the file
+#     #     capture_screenshot(url, file_name)
+#     print("Processing file:", file_path)
+#     url = url_from_file(file_path)
+#     print("            url:", url)
+#     capture_screenshot(url, file_path)
+for file_path in file_paths:
+    # Construct the corresponding PNG file path
+    png_file_path = file_path + ".png"
+
+    # Check if the PNG file exists
+    if os.path.isfile(png_file_path):
+        print("Skipping file (PNG already exists):", file_path)
+        continue
+
+    # Proceed with processing the file
     print("Processing file:", file_path)
+    # Assuming you have a function to extract the URL from the file
     url = url_from_file(file_path)
-    print("            url:", url)
+    print("URL:", url)
+    # Assuming you have a function to capture the screenshot
     capture_screenshot(url, file_path)
