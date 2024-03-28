@@ -89,7 +89,8 @@ if __name__ == "__main__":
             " or services.tls.certificates.leaf_data.issuer.organizational_unit:\"ADV-DEV\""
             " or services.http.response.headers.Server: ziti-browzer-bootstrapper"
             " or services.http.response.headers: (key:\"X-Ziti-BrowZer\"))"
-            " and not services.tls.certificates.leaf_data.names:\"netfoundry.io\""
+            " and not (services.tls.certificates.leaf_data.names:\"netfoundry.io\""
+            " or services.tls.certificates.leaf_data.names:\"cloudziti.io\")"
             #" and not services.port: {22}"
             #" and not services.transport_protocol: \"udp\""
         )
