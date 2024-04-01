@@ -1,10 +1,12 @@
 #!/bin/bash
 
-grep "ziti-controller REST API" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.ctrl-apis.to.date.txt
-grep "ziti-ctrl" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.ctrl-plane.to.date.txt
-grep "ziti-edge" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.edge-routers.to.date.txt
-grep "ziti-link" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.link-listeners.to.date.txt
-grep "zrok ui matched" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > all.zrok-ui.to.date.txt
+cd data
+grep "ziti-controller REST API" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.ctrl-apis.to.date.txt
+grep "ziti-ctrl" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.ctrl-plane.to.date.txt
+grep "ziti-edge" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.edge-routers.to.date.txt
+grep "ziti-link" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.link-listeners.to.date.txt
+grep "zrok ui matched" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.zrok-ui.to.date.txt
+cd ..
 
 # Function to summarize IP appearances in a tab-separated CSV file
 summarize_ip() {

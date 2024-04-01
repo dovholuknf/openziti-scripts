@@ -82,6 +82,7 @@ if __name__ == "__main__":
         current_date = datetime.now().strftime("%Y-%m-%d")
         query = (
             "(services.http.response.headers.Server: ziti-controller"
+            " or services.http.response.html_title: \"OpenZiti Console\""
             " or services.http.response.html_title: \"Open Ziti Console\""
             " or services.http.response.html_title: \"Ziti Admin Console\""
             " or services.http.response.html_title: \"Ziti Login\""
