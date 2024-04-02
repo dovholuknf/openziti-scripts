@@ -6,3 +6,5 @@ output
 backup
 *.mp4
 *.webm
+*output*
+data
