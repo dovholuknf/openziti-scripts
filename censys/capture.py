@@ -3,6 +3,7 @@ import time
 import os
 import glob
 import json
+import re
 import requests
 from PIL import Image, ImageDraw, ImageFont
 
@@ -42,17 +43,43 @@ def capture_screenshot(url, filename):
     driver.quit()
 
 
-def add_date_overlay(file, caption):
+def add_date_overlay(file, ymd):
     output = os.path.splitext(file)[0] + "-captioned.png"
+    
+    pattern = r"\./output/\d{4}-\d{2}-\d{2}-all\.(.+)\.to\.date.*"
+    extracted_filename = ""
+
+    match = re.match(pattern, file)
+    if match:
+        extracted_filename = match.group(1) 
     
     if not os.path.isfile(output):
         image = Image.open(file)
         draw = ImageDraw.Draw(image)
+        
+        # Define the font and text
         font = ImageFont.truetype("DejaVuSans-Bold.ttf", 54)
-        draw.text((10, 10), caption, fill="black", font=font)
+        text = f"{ymd} - {extracted_filename}"
+        text_width, text_height = draw.textsize(text, font)
+        
+        # Position the text in the top left corner
+        text_position = (10, 10)
+        
+        # Define background fill color and size
+        background_fill = "white"
+        background_size = (text_width + 20, text_height + 20)
+        
+        # Draw background fill rectangle
+        draw.rectangle([text_position, (text_position[0] + background_size[0], text_position[1] + background_size[1])], fill=background_fill)
+        
+        # Draw the text
+        draw.text(text_position, text, fill="black", font=font)
+        
+        # Save the image
         image.save(output)
     else:
         print(f"Skipping caption file (PNG already exists)")
+
 
 # ip_list_filename = 'input.txt'
 # report_url = url_from_file(ip_list_filename)
