@@ -6,6 +6,7 @@ grep "ziti-ctrl" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | so
 grep "ziti-edge" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.edge-routers.to.date.txt
 grep "ziti-link" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.link-listeners.to.date.txt
 grep "zrok ui matched" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.zrok-ui.to.date.txt
+grep "ziti-admin-console" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.ziti-admin-console.to.date.txt
 cd ..
 
 # Function to summarize IP appearances in a tab-separated CSV file
@@ -46,6 +47,7 @@ summarize_ip all.ctrl-plane.to.date.txt > summarized.ctrl-plane.txt
 summarize_ip all.edge-routers.to.date.txt > summarized.edge-routers.txt
 summarize_ip all.link-listeners.to.date.txt > summarized.link-listeners.txt
 summarize_ip all.zrok-ui.to.date.txt > summarized.zrok-ui.txt
+summarize_ip all.ziti-admin-console.to.date.txt > summarized.ziti-admin-console.txt
 
 split_and_sort_by_date() {
     local input_file="$1"
@@ -73,6 +75,7 @@ split_and_sort_by_date "all.ctrl-plane.to.date.txt"
 split_and_sort_by_date "all.edge-routers.to.date.txt"
 split_and_sort_by_date "all.link-listeners.to.date.txt"
 split_and_sort_by_date "all.zrok-ui.to.date.txt"
+split_and_sort_by_date "all.ziti-admin-console.to.date.txt"
 
 # ffmpeg -f image2 -r 25 -pattern_type glob -i '*ctrl-apis*png' -c:v libx264 -pix_fmt yuv420p output.mp4
 # ffmpeg -y -f image2 -r 2 -pattern_type glob -i '*ctrl-apis*png' -c:v libx264 -pix_fmt yuv420p output2.mp4
@@ -84,3 +87,20 @@ make_video "ctrl-plane"
 make_video "edge-routers"
 make_video "link-listeners"
 make_video "zrok-ui"
+make_video "ziti-admin-console"
+
+
+make_webm() {
+  local what="$1"
+  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "output/*${what}*-captioned.png" -c:v libvpx-vp9 -pix_fmt yuv420p -vf "fps=10,scale=1920:-1:flags=lanczos" ${what}-over-time.webm
+}
+
+
+make_webm "ctrl-apis"
+make_webm "ctrl-plane"
+make_webm "edge-routers"
+make_webm "link-listeners"
+make_webm "zrok-ui"
+make_webm "ziti-admin-console"
+
+

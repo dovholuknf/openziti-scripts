@@ -37,10 +37,14 @@ def capture_screenshot(url, filename):
     driver = webdriver.Chrome(options=options)
 
     driver.get(url)
-    time.sleep(1)  # Wait for 5 seconds for the page to fully load (adjust as needed)
+    time.sleep(5)  # Wait for 5 seconds for the page to fully load (adjust as needed)
     driver.save_screenshot(filename + ".png")
 
     driver.quit()
+    
+    # try outputting the captioned slide...
+    cap = png_file_path[9:19]
+    add_date_overlay(filename + ".png", cap)
 
 
 def add_date_overlay(file, ymd):
@@ -86,7 +90,7 @@ def add_date_overlay(file, ymd):
 # capture_screenshot(report_url, ip_list_filename + '.png')
 
 output_folder = "./output"
-file_paths = sorted(glob.glob(os.path.join(output_folder, "*.txt")))
+file_paths = sorted(glob.glob(os.path.join(output_folder, "*console*.txt")))
 # for file_path in file_paths:
 #     # if os.path.isfile(file_path):
 #     #     # Capture screenshot for the URL with the same name as the file
@@ -98,10 +102,6 @@ file_paths = sorted(glob.glob(os.path.join(output_folder, "*.txt")))
 for file_path in file_paths:
     # Construct the corresponding PNG file path
     png_file_path = file_path + ".png"
-    cap = png_file_path[9:19]
-    
-    # try outputting the captioned slide...
-    add_date_overlay(png_file_path, cap)
     
     # Check if the PNG file exists
     if os.path.isfile(png_file_path):
