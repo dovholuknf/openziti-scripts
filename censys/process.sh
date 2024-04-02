@@ -40,9 +40,6 @@ summarize_ip() {
     echo "$summary"
 }
 
-# Example usage: summarize_ip "all.$something.to.date.txt"
-
-
 
 summarize_ip all.ctrl-apis.to.date.txt > summarized.ctrl-apis.txt
 summarize_ip all.ctrl-plane.to.date.txt > summarized.ctrl-plane.txt
@@ -68,7 +65,7 @@ split_and_sort_by_date() {
 
 make_video() {
   local what="$1"
-  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "output/*${what}*png" -c:v libx264 -pix_fmt yuv420p ${what}-over-time.mp4
+  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "output/*${what}*-captioned.png" -c:v libx264 -pix_fmt yuv420p ${what}-over-time.mp4
 }
 
 split_and_sort_by_date "all.ctrl-apis.to.date.txt"

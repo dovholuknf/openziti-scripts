@@ -4,6 +4,7 @@ import os
 import glob
 import json
 import requests
+from PIL import Image, ImageDraw, ImageFont
 
 def url_from_file(filename):
     target_url = 'https://ipinfo.io/tools/map?cli=1'
@@ -41,6 +42,18 @@ def capture_screenshot(url, filename):
     driver.quit()
 
 
+def add_date_overlay(file, caption):
+    output = os.path.splitext(file)[0] + "-captioned.png"
+    
+    if not os.path.isfile(output):
+        image = Image.open(file)
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 54)
+        draw.text((10, 10), caption, fill="black", font=font)
+        image.save(output)
+    else:
+        print(f"Skipping caption file (PNG already exists)")
+
 # ip_list_filename = 'input.txt'
 # report_url = url_from_file(ip_list_filename)
 # capture_screenshot(report_url, ip_list_filename + '.png')
@@ -58,7 +71,11 @@ file_paths = sorted(glob.glob(os.path.join(output_folder, "*.txt")))
 for file_path in file_paths:
     # Construct the corresponding PNG file path
     png_file_path = file_path + ".png"
-
+    cap = png_file_path[9:19]
+    
+    # try outputting the captioned slide...
+    add_date_overlay(png_file_path, cap)
+    
     # Check if the PNG file exists
     if os.path.isfile(png_file_path):
         print("Skipping file (PNG already exists):", file_path)
