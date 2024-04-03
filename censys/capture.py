@@ -90,7 +90,7 @@ def add_date_overlay(file, ymd):
 # capture_screenshot(report_url, ip_list_filename + '.png')
 
 output_folder = "./output"
-file_paths = sorted(glob.glob(os.path.join(output_folder, "*console*.txt")))
+file_paths = sorted(glob.glob(os.path.join(output_folder, "*.txt")))
 # for file_path in file_paths:
 #     # if os.path.isfile(file_path):
 #     #     # Capture screenshot for the URL with the same name as the file
