@@ -1,13 +1,15 @@
 #!/bin/bash
+SCRIPT_DIR="$(realpath $(dirname "$0"))"
+DATA_DIR=$SCRIPT_DIR/data
+OUTPUT_DIR=$SCRIPT_DIR/output
 
-cd data
-grep "ziti-controller REST API" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.ctrl-apis.to.date.txt
-grep "ziti-ctrl" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.ctrl-plane.to.date.txt
-grep "ziti-edge" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.edge-routers.to.date.txt
-grep "ziti-link" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.link-listeners.to.date.txt
-grep "zrok ui matched" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.zrok-ui.to.date.txt
-grep "ziti-admin-console" *data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort > ../all.ziti-admin-console.to.date.txt
-cd ..
+grep "ziti-controller REST API" $DATA_DIR/*data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort | sed 's#'${DATA_DIR}'/##g' > $SCRIPT_DIR/all.ctrl-apis.to.date.txt
+grep "ALPN	ziti-ctrl" $DATA_DIR/*data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort | sed 's#'${DATA_DIR}'/##g' > $SCRIPT_DIR/all.ctrl-plane.to.date.txt
+grep "ALPN	ziti-edge" $DATA_DIR/*data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort | sed 's#'${DATA_DIR}'/##g' > $SCRIPT_DIR/all.edge-routers.to.date.txt
+grep "ALPN	ziti-link" $DATA_DIR/*data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort | sed 's#'${DATA_DIR}'/##g' > $SCRIPT_DIR/all.link-listeners.to.date.txt
+grep "zrok ui matched" $DATA_DIR/*data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort | sed 's#'${DATA_DIR}'/##g' > $SCRIPT_DIR/all.zrok-ui.to.date.txt
+grep "ziti-admin-console" $DATA_DIR/*data.results.txt | sed 's/.censys-data.results.txt:/\t/g' | sort | sed 's#'${DATA_DIR}'/##g' > $SCRIPT_DIR/all.ziti-admin-console.to.date.txt
+
 
 # Function to summarize IP appearances in a tab-separated CSV file
 summarize_ip() {
@@ -56,7 +58,7 @@ split_and_sort_by_date() {
 
     # Create the output directory if it doesn't exist
     mkdir -p "$output_dir"
-
+	
     echo "processing $input_file"
     while IFS=$'\t' read -r date rest_of_line || [[ -n "$date" ]]; do
         output_file="$output_dir/${date}-${base_name}.txt"
@@ -67,8 +69,11 @@ split_and_sort_by_date() {
 
 make_video() {
   local what="$1"
-  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "output/*${what}*-captioned.png" -c:v libx264 -pix_fmt yuv420p ${what}-over-time.mp4
+  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "${OUTPUT_DIR}/*${what}*-captioned.png" -c:v libx264 -pix_fmt yuv420p ${what}-over-time.mp4
 }
+
+echo "cleaning previous split and sorted output"
+rm $OUTPUT_DIR/*-all.*to.date*.txt
 
 split_and_sort_by_date "all.ctrl-apis.to.date.txt"
 split_and_sort_by_date "all.ctrl-plane.to.date.txt"
@@ -92,7 +97,7 @@ make_video "ziti-admin-console"
 
 make_webm() {
   local what="$1"
-  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "output/*${what}*-captioned.png" -c:v libvpx-vp9 -pix_fmt yuv420p -vf "fps=10,scale=1920:-1:flags=lanczos" ${what}-over-time.webm
+  ffmpeg -y -f image2 -r 2 -pattern_type glob -i "${OUTPUT_DIR}/*${what}*-captioned.png" -c:v libvpx-vp9 -pix_fmt yuv420p -vf "fps=10,scale=1920:-1:flags=lanczos" ${what}-over-time.webm
 }
 
 
