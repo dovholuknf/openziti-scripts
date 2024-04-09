@@ -30,7 +30,7 @@ docker run -it --rm --name certbot \
     -v "${aws_creds}:/root/.aws/credentials:ro" \
     -v "${local_dir}/letsencrypt:/etc/letsencrypt" \
     certbot/dns-route53 certonly \
-    -d '*.jan08.demo.openziti.org' \
+    -d "*.${wildcard_url}" \
     -m "${your_email}" \
     --dns-route53 \
     --non-interactive \
