@@ -15,4 +15,8 @@ Find these lines:
 and update them to:
       - binding: zac
         options: { "location": "$ZITI_HOME/zac/${ZAC_VERSION}", "indexFile":"index.html" }
+
+Once done, restart your controller.
+
+Optionally - split the management and client apis and add zac to the 'management' api section
 HERE
