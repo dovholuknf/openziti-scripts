@@ -1,3 +1,4 @@
 **/*.env
 **/*.pwd
 .idea
+browzerdc.yml

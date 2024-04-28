@@ -74,6 +74,7 @@ services:
       ZITI_BROWZER_BOOTSTRAPPER_CERTIFICATE_PATH: /etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem
       ZITI_BROWZER_BOOTSTRAPPER_KEY_PATH: /etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem
       ZITI_BROWZER_BOOTSTRAPPER_SCHEME: https
+      ZITI_BROWZER_RUNTIME_ORIGIN_TRIAL_TOKEN: "${ZITI_BROWZER_GOOGLE_JSPI_TOKEN}"
       ZITI_BROWZER_BOOTSTRAPPER_TARGETS: >
           {
             "targetArray": [
