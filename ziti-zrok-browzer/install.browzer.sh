@@ -116,37 +116,6 @@ services:
     ports:
       - "2000:8000"
   
-  ziti-console:
-    image: openziti/zac
-    user: root
-    working_dir: /usr/src/app
-    environment:
-      - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
-      - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
-      - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
-      - PORTTLS=8443
-      - ALLOW_HTTP=true
-    ports:
-      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_CONSOLE_HTTP_PORT}:1408
-      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_CONSOLE_HTTPS_PORT}:8443
-    volumes:
-      - browzer-ziti-fs:/persistent
-      - ${LE_CHAIN}:/usr/src/app/server.chain.pem
-      - ${LE_KEY}:/usr/src/app/server.key
-  
-  pkce-tester:
-    image:  dovholuknf/pkce-debugging
-    ports:
-      - 8450:8080
-    environment:
-      - TLS_CERT=${LE_CHAIN}
-      - TLS_KEY=${LE_KEY}
-      - AUTH_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth
-      - TOKEN_URL=https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
-      - CLIENT_ID=${ZITI_BROWZER_CLIENT_ID}
-    volumes:
-      - /data/docker/letsencrypt:/etc/letsencrypt
-
 volumes:
   browzer-keycloak-data:
   browzer-ziti-fs:
