@@ -41,8 +41,8 @@ services:
       - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
     
     environment:
-      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PWD}
+      - KEYCLOAK_ADMIN=\${KEYCLOAK_ADMIN_USER}
+      - KEYCLOAK_ADMIN_PASSWORD=\${KEYCLOAK_ADMIN_PWD}
     
     command:
       - "start"
@@ -115,7 +115,7 @@ services:
     image: crccheck/hello-world
     ports:
       - "2000:8000"
-  
+
 volumes:
   browzer-keycloak-data:
   browzer-ziti-fs:
@@ -156,7 +156,7 @@ echo "OIDC jwks url : $jwks"
 ext_jwt_signer=$(ziti edge create ext-jwt-signer "${ziti_object_prefix}-ext-jwt-signer" "${issuer}" --jwks-endpoint "${jwks}" --audience "${ZITI_BROWZER_CLIENT_ID}" --claims-property email)
 echo "ext jwt signer id: $ext_jwt_signer"
 
-auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer})
+auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer} --secondary-req-ext-jwt-signer ${ext_jwt_signer})
 echo "auth policy id: $auth_policy"
 
 echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
