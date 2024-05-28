@@ -2,7 +2,7 @@ svc=brozac
 intercept_address="${svc}.ziti"
 intercept_port=80
 offload_address=localhost
-offload_port=${ZITI_CONSOLE_HTTP_PORT}
+offload_port=${ZITI_CTRL_EDGE_MGMT_PORT}
 
 function createService {
   ziti edge create config ${svc}.host.config host.v1 '{"protocol":"tcp", "address":"'"${offload_address}"'", "port":'${offload_port}'}'
