@@ -92,7 +92,7 @@ services:
                       "vhost": "brozac.${WILDCARD_DNS}${_ZITI_BROWZER_PORT}",
                       "service": "brozac",
                       "path": "/",
-                      "scheme": "http",
+                      "scheme": "https",
                       "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
                       "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
                       "idp_type": "keycloak",
