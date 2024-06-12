@@ -1,0 +1,70 @@
+export DOCKER_DIR="$PWD/docker-data"
+export PROJ_NAME="openziti"
+export WILDCARD_DNS="test.ziti"
+#export COMPOSE_FILE="./compose.yaml"
+
+# OpenZiti Variables
+export ZITI_IMAGE=openziti/quickstart
+export ZITI_VERSION=latest
+
+# the user and password to use
+# Leave password blank to have a unique value generated or set the password explicitly
+export ZITI_USER=admin
+export ZITI_PWD=rootroot
+ 
+export ZITI_INTERFACE=0.0.0.0
+
+# controller name, address/port information
+export ZITI_CTRL_NAME=ziti-controller
+export ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=ziti-edge-controller
+export ZITI_CTRL_ADVERTISED_ADDRESS=ziti-controller
+#ZITI_CTRL_EDGE_IP_OVERRIDE=10.10.10.10
+#ZITI_CTRL_EDGE_ADVERTISED_PORT=8441
+#ZITI_CTRL_ADVERTISED_PORT=8440
+
+# The duration of the enrollment period (in minutes), default if not set. shown - 7days
+export ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION=10080
+export ZITI_ROUTER_ENROLLMENT_DURATION=10080
+
+
+# router address/port information
+#ZITI_ROUTER_NAME=ziti-edge-router
+#ZITI_ROUTER_ADVERTISED_ADDRESS=ziti-edge-router
+#ZITI_ROUTER_PORT=8442
+#ZITI_ROUTER_IP_OVERRIDE=10.10.10.10
+#ZITI_ROUTER_LISTENER_BIND_PORT=8444
+#ZITI_ROUTER_ROLES=public
+
+
+# keycloak
+export KEYCLOAK_ADMIN_USER=admin
+export KEYCLOAK_ADMIN_PWD=rootroot
+export KEYCLOAK_REALM=zitirealm
+export KEYCLOAK_PORT=8081
+export KEYCLOAK_BASE="keycloak.${WILDCARD_DNS}"
+export KEYCLOAK_NOSSL_URL="http://0.0.0.0:8080"
+
+# browzer
+export ZITI_BROWZER_CONTROLLER_HOST=ziti-edge-controller.${WILDCARD_DNS}
+export ZITI_BROWZER_PORT=443
+export ZITI_BROWZER_WSS_ER_PORT=8505
+export ZITI_BROWZER_HTTP_AGENT_URL="browzer.${WILDCARD_DNS}"
+export KEYCLOAK_HOST_AND_PORT="https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}"
+export ZITI_BROWZER_OIDC_URL="${KEYCLOAK_HOST_AND_PORT}/realms/${KEYCLOAK_REALM}"
+export ZITI_BROWZER_CLIENT_ID="browzerBootstrapClient"
+export ZITI_BROWZER_VHOST="docker-whale.${WILDCARD_DNS}"
+export ZITI_BROWZER_SERVICE="docker.whale"
+export ZITI_BROWZER_WSS_ER_HOST="wss.${WILDCARD_DNS}"
+
+export ZITI_BROWZER_IDENTITIES="email.here"
+export ZITI_BROWZER_DOCKER_PROJECT="browzer-compose"
+
+# see: https://openziti.discourse.group/t/browzer-setup-error-1014-origintrial-subdomain-mismatch/2481/11
+# for :point_down:
+export BROWZER_ORIGINAL_TRIAL_TOKEN=""
+
+# if you want to use GITHUB as federated oauth via keycloak set these
+export ZITI_BROWZER_GITHUB_CLIENT=
+export ZITI_BROWZER_GITHUB_CLIENTSECRET=
+
+# if you want to use GOOGLE as federated oauth via keycloak set these

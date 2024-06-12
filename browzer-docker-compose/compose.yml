@@ -1,0 +1,198 @@
+name: ${PROJ_NAME}
+services:
+  ziti-controller:
+    image: "${ZITI_IMAGE}:${ZITI_VERSION}"
+    healthcheck:
+      test: curl -m 1 -s -k -f https://${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}:${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}/edge/client/v1/version
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    env_file:
+      - ./.env
+    ports:
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}:${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_CTRL_ADVERTISED_PORT:-6262}:${ZITI_CTRL_ADVERTISED_PORT:-6262}
+    environment:
+      - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
+      - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
+      - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
+      - ZITI_CTRL_EDGE_IP_OVERRIDE=${ZITI_CTRL_EDGE_IP_OVERRIDE:-127.0.0.1}
+      - ZITI_CTRL_ADVERTISED_PORT=${ZITI_CTRL_ADVERTISED_PORT:-6262}
+      - ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION=${ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION}
+      - ZITI_ROUTER_ENROLLMENT_DURATION=${ZITI_ROUTER_ENROLLMENT_DURATION}
+      - ZITI_USER=${ZITI_USER:-admin}
+      - ZITI_PWD=${ZITI_PWD}
+      - ZITI_PKI_ALT_SERVER_CERT=/docker-data/${WILDCARD_DNS}.server.crt.2171
+      - ZITI_PKI_ALT_SERVER_KEY=/docker-data/${WILDCARD_DNS}.server.key.2171
+    networks:
+      ziti:
+        aliases:
+          - ziti-edge-controller
+          - ziti-edge-controller.${WILDCARD_DNS}
+    volumes:
+      - ziti-fs:/persistent
+      - ${DOCKER_DIR}:/docker-data
+      - ${DOCKER_DIR}/${WILDCARD_DNS}.root.crt:/usr/local/share/ca-certificates/${WILDCARD_DNS}.root.crt
+
+    entrypoint:
+      - "/var/openziti/scripts/run-controller.sh"
+
+  ziti-controller-init-container:
+    image: "${ZITI_IMAGE}:${ZITI_VERSION}"
+    depends_on:
+      ziti-controller:
+        condition: service_healthy
+    environment:
+      - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
+      - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
+    env_file:
+      - ./.env
+    networks:
+      ziti:
+    volumes:
+      - ziti-fs:/persistent
+    entrypoint:
+      - "/var/openziti/scripts/run-with-ziti-cli.sh"
+    command:
+      - "/var/openziti/scripts/access-control.sh"
+
+  ziti-edge-router:
+    image: "${ZITI_IMAGE}:${ZITI_VERSION}"
+    env_file:
+      - ./.env
+    depends_on:
+      ziti-controller:
+        condition: service_healthy
+    ports:
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_ROUTER_PORT:-3022}:${ZITI_ROUTER_PORT:-3022}
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_ROUTER_LISTENER_BIND_PORT:-10080}:${ZITI_ROUTER_LISTENER_BIND_PORT:-10080}
+      - ${ZITI_INTERFACE:-0.0.0.0}:${ZITI_BROWZER_WSS_ER_PORT:-3023}:${ZITI_BROWZER_WSS_ER_PORT:-3023}
+    environment:
+      - ZITI_CTRL_ADVERTISED_ADDRESS=${ZITI_CTRL_ADVERTISED_ADDRESS:-ziti-controller}
+      - ZITI_CTRL_ADVERTISED_PORT=${ZITI_CTRL_ADVERTISED_PORT:-6262}
+      - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
+      - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
+      - ZITI_ROUTER_NAME=${ZITI_ROUTER_NAME:-ziti-edge-router}
+      - ZITI_ROUTER_ADVERTISED_ADDRESS=${ZITI_ROUTER_ADVERTISED_ADDRESS:-ziti-edge-router}
+      - ZITI_ROUTER_PORT=${ZITI_ROUTER_PORT:-3022}
+      - ZITI_ROUTER_LISTENER_BIND_PORT=${ZITI_ROUTER_LISTENER_BIND_PORT:-10080}
+      - ZITI_ROUTER_ROLES=public
+      - ZITI_PKI_ALT_SERVER_CERT=/docker-data/${WILDCARD_DNS}.server.crt.2171
+      - ZITI_PKI_ALT_SERVER_KEY=/docker-data/${WILDCARD_DNS}.server.key.2171
+    networks:
+      ziti:
+        aliases:
+          - ziti-edge-router
+          - ziti-edge-router.${WILDCARD_DNS}
+    volumes:
+      - ziti-fs:/persistent
+      - ${DOCKER_DIR}:/docker-data
+    entrypoint: /bin/bash
+    command: "/var/openziti/scripts/run-router.sh edge"
+
+  ziti-console:
+    image: openziti/zac
+    working_dir: /usr/src/app
+    environment:
+      - ZAC_SERVER_CERT_CHAIN=/persistent/pki/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-intermediate/certs/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-server.cert
+      - ZAC_SERVER_KEY=/persistent/pki/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-intermediate/keys/${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}-server.key
+      - ZITI_CTRL_EDGE_ADVERTISED_ADDRESS=${ZITI_CTRL_EDGE_ADVERTISED_ADDRESS:-ziti-edge-controller}
+      - ZITI_CTRL_EDGE_ADVERTISED_PORT=${ZITI_CTRL_EDGE_ADVERTISED_PORT:-1280}
+      - ZITI_CTRL_NAME=${ZITI_CTRL_NAME:-ziti-edge-controller}
+      - PORTTLS=8443
+    depends_on:
+      ziti-controller:
+        condition: service_healthy
+    ports:
+      - ${ZITI_INTERFACE:-0.0.0.0}:8443:8443
+    volumes:
+      - ziti-fs:/persistent
+    networks:
+      - ziti
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.0
+    command:
+      - "start-dev"
+      - "--https-certificate-file=/docker-data/${WILDCARD_DNS}.server.crt"
+      - "--https-certificate-key-file=/docker-data/${WILDCARD_DNS}.server.key"
+      - "--https-port=${KEYCLOAK_PORT}"
+    ports:
+      - ${KEYCLOAK_PORT}:${KEYCLOAK_PORT}
+    environment:
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PWD}
+    networks:
+      ziti:
+        aliases:
+          - keycloak.test.ziti
+    volumes:
+      - ${DOCKER_DIR}:/docker-data
+
+  browzer:
+    image: ghcr.io/openziti/ziti-browzer-bootstrapper:0.58.0
+    restart: always
+    depends_on:
+      ziti-controller:
+        condition: service_healthy
+    networks:
+      - ziti
+
+    volumes:
+      - ${DOCKER_DIR}:/docker-data
+      - ziti-fs:/persistent
+
+    ports:
+      - "${ZITI_BROWZER_PORT}:${ZITI_BROWZER_PORT}"
+
+    entrypoint: "/bin/bash"
+    command: -c "node index.js"
+    
+    # entrypoint: ['/docker-data/start.sh', "/home/node/ziti-browzer-bootstrapper/zha-docker-entrypoint"]
+
+    environment:
+      NODE_EXTRA_CA_CERTS: /persistent/pki/ziti-edge-controller-root-ca/certs/ziti-edge-controller-root-ca.cert
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      NODE_ENV: production
+      ZITI_BROWZER_RUNTIME_ORIGIN_TRIAL_TOKEN: ${BROWZER_ORIGINAL_TRIAL_TOKEN}
+      ZITI_BROWZER_BOOTSTRAPPER_LOGLEVEL: debug
+      ZITI_BROWZER_RUNTIME_LOGLEVEL: debug
+      ZITI_CONTROLLER_HOST: ${ZITI_BROWZER_CONTROLLER_HOST}
+      ZITI_CONTROLLER_PORT: 1280
+      ZITI_BROWZER_BOOTSTRAPPER_HOST: example.com
+      ZITI_BROWZER_BOOTSTRAPPER_LISTEN_PORT: ${ZITI_BROWZER_PORT}
+      ZITI_BROWZER_BOOTSTRAPPER_CERTIFICATE_PATH: /docker-data/${WILDCARD_DNS}.server.crt
+      ZITI_BROWZER_BOOTSTRAPPER_KEY_PATH: /docker-data/${WILDCARD_DNS}.server.key
+      ZITI_BROWZER_BOOTSTRAPPER_SCHEME: https
+      ZITI_BROWZER_BOOTSTRAPPER_TARGETS: >
+        {
+          "targetArray": [
+          {
+            "vhost": "${ZITI_BROWZER_VHOST}",
+            "service": "${ZITI_BROWZER_SERVICE}",
+            "path": "/",
+            "scheme": "http",
+            "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}/realms/${KEYCLOAK_REALM}",
+            "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
+            "idp_type": "keycloak",
+            "idp_realm": "${KEYCLOAK_REALM}"
+          }
+          ]
+        }
+      entrypoint: "/bin/bash"
+      command: "node index.js"
+
+  docker-whale:
+    image: crccheck/hello-world
+    ports:
+      - "2000:8000"
+    networks:
+      - ziti
+
+networks:
+  ziti:
+    driver: bridge
+
+volumes:
+  ziti-fs:
+    driver: local
