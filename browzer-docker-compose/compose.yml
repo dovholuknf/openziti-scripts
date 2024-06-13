@@ -130,7 +130,7 @@ services:
       - ${DOCKER_DIR}:/docker-data
 
   browzer:
-    image: ghcr.io/openziti/ziti-browzer-bootstrapper:0.61.1
+    image: ghcr.io/openziti/ziti-browzer-bootstrapper:latest
     restart: always
     depends_on:
       ziti-controller:
