@@ -5,3 +5,4 @@ docker run -it --rm \
   -v "$1:/root/.aws/credentials:ro" \
   certbot/dns-route53 renew --dns-route53
 
+chown -R ubuntu:zitiweb /data/docker/letsencrypt

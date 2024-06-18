@@ -26,9 +26,9 @@ mkdir -p $ZITI_HOME/zacs
 wget -O $ZITI_HOME/zacs/v${ZAC_VERSION}-download.zip https://github.com/openziti/ziti-console/releases/download/app-ziti-console-v${ZAC_VERSION}/ziti-console.zip
 unzip $ZITI_HOME/zacs/v${ZAC_VERSION}-download.zip -d $ZITI_HOME/zacs/v${ZAC_VERSION}
 
-sed -i 's/#      - binding/      - binding/g' $ZITI_HOME/$(hostname).yaml
-sed -i 's/#        options/        options/g' $ZITI_HOME/$(hostname).yaml
-sed -i 's#"location": "./zac"#"location": "'$ZITI_HOME/zacs/v${ZAC_VERSION}'"#g' $ZITI_HOME/$(hostname).yaml
+sed -i 's/#- binding/- binding/g' $ZITI_HOME/$(hostname).yaml
+sed -i 's/#  options/  options/g' $ZITI_HOME/$(hostname).yaml
+sed -i 's|#    location: /ziti-console|    location: '$ZITI_HOME/zacs/v${ZAC_VERSION}'|g' $ZITI_HOME/$(hostname).yaml
 
 sudo systemctl restart ziti-controller
 sudo systemctl restart ziti-router

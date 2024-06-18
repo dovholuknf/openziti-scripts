@@ -46,8 +46,8 @@ services:
     
     command:
       - "start"
-      - "--https-certificate-file=${LE_CHAIN}"
-      - "--https-certificate-key-file=${LE_KEY}"
+      - "--https-certificate-file=/etc/letsencrypt/live/${WILDCARD_DNS}/fullchain.pem"
+      - "--https-certificate-key-file=/etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem"
       - "--hostname=${KEYCLOAK_BASE}"
       - "--https-port=${KEYCLOAK_PORT}"
 
@@ -91,7 +91,7 @@ services:
             {
                       "vhost": "brozac.${WILDCARD_DNS}${_ZITI_BROWZER_PORT}",
                       "service": "brozac",
-                      "path": "/",
+                      "path": "/zac",
                       "scheme": "https",
                       "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
                       "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
