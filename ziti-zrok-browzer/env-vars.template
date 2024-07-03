@@ -34,6 +34,8 @@ export ZROK_NGINX_PORT=8445
 export ZROK_API_ADDRESS="api.${WILDCARD_DNS}"
 export ZROK_ROOT=$HOME/.zrok
 export ZROK_API_ENDPOINT=http://localhost:${ZROK_CTRL_PORT}
+export ZROK_FIRST_USER=your.first.user.here
+export ZROK_FIRST_PASS=
 
 # -- browzer settings
 export ZITI_BROWZER_PORT=443

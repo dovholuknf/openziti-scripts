@@ -201,3 +201,6 @@ sudo systemctl enable --now zrok-frontend
 echo " "
 echo "now register by going to: https://${ZROK_API_ADDRESS}:${ZROK_NGINX_PORT}/register/$(journalctl --no-pager -u zrok-controller -n 100 | grep "has registration token" | tail -1 | cut -d ":" -f4-100 | jq .msg | cut -d \' -f4)"
 echo " "
+
+echo 'Creating zrok user specified by: ${ZROK_FIRST_USER} and ${ZROK_FIRST_PASS}'
+zrok admin create account ${ZROK_ROOT}/ctrl.yml ${ZROK_FIRST_USER} ${ZROK_FIRST_PASS}
