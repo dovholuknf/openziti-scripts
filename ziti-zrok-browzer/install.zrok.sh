@@ -78,7 +78,7 @@ mkdir -p $ZROK_ROOT/bin
 ZROK_BINARY=$(which zrok)
 
 cat > $ZROK_ROOT/ctrl.yml << HERE
-v: 3
+v: 4
 admin:
   secrets:
     -               $ZROK_ADMIN_TOKEN
