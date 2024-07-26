@@ -140,7 +140,7 @@ echo "auth policy id: $auth_policy"
 
 echo "creating users specified by ZITI_BROWZER_IDENTITIES: ${ZITI_BROWZER_IDENTITIES}"
 for id in ${ZITI_BROWZER_IDENTITIES}; do
-  ziti edge create identity user "${id}" --auth-policy ${auth_policy} --external-id "${id}" -a docker.whale.dialers,brozac.dialers,puter.dialers
+  ziti edge create identity "${id}" --auth-policy ${auth_policy} --external-id "${id}" -a docker.whale.dialers,brozac.dialers,puter.dialers
 done
 
 
