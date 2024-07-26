@@ -75,38 +75,17 @@ services:
       ZITI_BROWZER_BOOTSTRAPPER_KEY_PATH: /etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem
       ZITI_BROWZER_BOOTSTRAPPER_SCHEME: https
       ZITI_BROWZER_RUNTIME_ORIGIN_TRIAL_TOKEN: "${ZITI_BROWZER_GOOGLE_JSPI_TOKEN}"
+	  ZITI_BROWZER_BOOTSTRAPPER_WILDCARD_VHOSTS: true 
       ZITI_BROWZER_BOOTSTRAPPER_TARGETS: >
           {
             "targetArray": [
             {
-                      "vhost": "${ZITI_BROWZER_VHOST}${_ZITI_BROWZER_PORT}",
-                      "service": "${ZITI_BROWZER_SERVICE}",
+                      "vhost": "*",
+                      "service": "*",
                       "path": "/",
                       "scheme": "http",
                       "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
-                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
-                      "idp_type": "keycloak",
-                      "idp_realm": "${KEYCLOAK_REALM}"
-            },
-            {
-                      "vhost": "brozac.${WILDCARD_DNS}${_ZITI_BROWZER_PORT}",
-                      "service": "brozac",
-                      "path": "/zac",
-                      "scheme": "https",
-                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
-                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
-                      "idp_type": "keycloak",
-                      "idp_realm": "${KEYCLOAK_REALM}"
-            },
-            {
-                      "vhost": "puter.clint.demo.openziti.org",
-                      "service": "puter",
-                      "path": "/",
-                      "scheme": "http",
-                      "idp_issuer_base_url": "${KEYCLOAK_HOST_AND_PORT}realms/zitirealm",
-                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}",
-                      "idp_type": "keycloak",
-                      "idp_realm": "${KEYCLOAK_REALM}"
+                      "idp_client_id": "${ZITI_BROWZER_CLIENT_ID}"
             }
             ]
           }
