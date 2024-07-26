@@ -93,12 +93,10 @@ services:
     image: crccheck/hello-world
     ports:
       - "2000:8000"
-	  
+
   puter:
     container_name: puter
     image: ghcr.io/heyputer/puter:latest
-    pull_policy: always
-    # build: ./
     restart: unless-stopped
     ports:
       - '4100:4100'
