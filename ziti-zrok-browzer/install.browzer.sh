@@ -95,7 +95,6 @@ services:
       - "2000:8000"
 
   puter:
-    container_name: puter
     image: ghcr.io/heyputer/puter:latest
     restart: unless-stopped
     ports:
