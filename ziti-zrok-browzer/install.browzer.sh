@@ -25,7 +25,6 @@ if [[ "${ZITI_BROWZER_PORT}" != "" && "${ZITI_BROWZER_PORT}" != "443" ]]; then
   _ZITI_BROWZER_PORT=":${ZITI_BROWZER_PORT-}"
 fi
 cat > $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml <<HERE
-version: "3.3"
 services:
   browzer-keycloak:
     image: quay.io/keycloak/keycloak:23.0.1
