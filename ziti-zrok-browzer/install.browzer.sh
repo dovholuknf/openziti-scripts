@@ -105,8 +105,8 @@ services:
       PUID: 1000
       PGID: 1000
     volumes:
-      - ./puter/config:/etc/puter
-      - ./puter/data:/var/puter
+      - /home/ubuntu/puter/config:/etc/puter
+      - /home/ubuntu/puter/data:/var/puter
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://puter.localhost:4100/test || exit 1
       interval: 30s
