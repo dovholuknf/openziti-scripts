@@ -51,7 +51,7 @@ services:
       - "--https-port=${KEYCLOAK_PORT}"
 
   browzer-bootstrapper:
-    image: ghcr.io/openziti/ziti-browzer-bootstrapper:latest
+    image: ghcr.io/openziti/ziti-browzer-bootstrapper:${ZITI_BROWZER_VERSION:-latest}
     restart: always
 
     volumes:
@@ -74,7 +74,7 @@ services:
       ZITI_BROWZER_BOOTSTRAPPER_KEY_PATH: /etc/letsencrypt/live/${WILDCARD_DNS}/privkey.pem
       ZITI_BROWZER_BOOTSTRAPPER_SCHEME: https
       ZITI_BROWZER_RUNTIME_ORIGIN_TRIAL_TOKEN: "${ZITI_BROWZER_GOOGLE_JSPI_TOKEN}"
-      ZITI_BROWZER_BOOTSTRAPPER_WILDCARD_VHOSTS: false
+      _ZITI_BROWZER_BOOTSTRAPPER_WILDCARD_VHOSTS: false
       ZITI_BROWZER_BOOTSTRAPPER_TARGETS: >
           {
             "targetArray": [
