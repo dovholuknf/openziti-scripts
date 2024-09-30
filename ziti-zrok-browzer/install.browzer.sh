@@ -27,7 +27,7 @@ fi
 cat > $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml <<HERE
 services:
   browzer-keycloak:
-    image: quay.io/keycloak/keycloak:23.0.1
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
     restart: always
     user: root
 
@@ -154,12 +154,18 @@ docker compose -f $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml --project-name 
 docker compose -f $SCRIPT_DIR/${ZITI_BROWZER_DOCKER_PROJECT}.yml --project-name ${ZITI_BROWZER_DOCKER_PROJECT} up -d
 
 echo "waiting for keycloak to come online...."
-wait_for_200="https://keycloak.clint.demo.openziti.org:8446"
-while [[ "$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null "${wait_for_200}")" != "200" ]]; do
-  echo "waiting for ${wait_for_200}"
+
+wait_for_response="https://${KEYCLOAK_BASE}:${KEYCLOAK_PORT}"
+while true; do
+  http_code=$(curl -w "%{http_code}" -m 1 -s -k -o /dev/null "${wait_for_response}")
+  if [[ $http_code -ge 200 && $http_code -le 350 ]]; then
+    echo "Response code ${http_code} received, exiting loop."
+    break
+  fi
+  echo "waiting for ${wait_for_response}, current code: ${http_code}"
   sleep 5
 done
-echo "${wait_for_200} responded with http 200"
+
 sleep 1
 
 echo "configuring keycloak for OpenZiti and Browzer"

@@ -4,6 +4,12 @@ source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
 unsetZitiEnv
 source $ENV_VAR_FILE
 
+echo "VERSOIN $ZITI_VERSION_OVERRIDE"
+echo "ZITI_BIN_DIR: $ZITI_BIN_DIR"
+echo "ZITI_BINARIES_FILE: $ZITI_BINARIES_FILE"
+echo "ZITI_VERSION_OVERRIDE: $ZITI_VERSION_OVERRIDE"
+echo "ZITI_BINARIES_VERSION: $ZITI_BINARIES_VERSION"
+
 echo "Running expressInstall"
 expressInstall
 createControllerSystemdFile 
