@@ -59,7 +59,7 @@ if [[ "${ZITI_BROWZER_GOOGLE_CLIENTSECRET}" != "" ]]; then
 fi
 
 # -- create a client usable for ext-jwt-auth
-ZITI_PKCE_CLIENT_ID="openziti-pkce-client"
+ZITI_PKCE_CLIENT_ID="openziti-client"
 
 kcadm create clients \
   -r ${KEYCLOAK_REALM} \
