@@ -3,7 +3,7 @@ function kcadm {
     -f ${SCRIPT_DIR}/${ZITI_BROWZER_DOCKER_PROJECT}.yml \
     --project-name ${ZITI_BROWZER_DOCKER_PROJECT} \
     exec -it browzer-keycloak \
-    /opt/keycloak/bin/kcadm.sh $@;
+    /opt/keycloak/bin/kcadm.sh "$@";
 }
 
 kcadm config credentials \
@@ -57,3 +57,26 @@ if [[ "${ZITI_BROWZER_GOOGLE_CLIENTSECRET}" != "" ]]; then
     -s config.clientId=${ZITI_BROWZER_GOOGLE_CLIENT} \
     -s config.clientSecret=${ZITI_BROWZER_GOOGLE_CLIENTSECRET}
 fi
+
+# -- create a client usable for ext-jwt-auth
+ZITI_PKCE_CLIENT_ID="openziti-pkce-client"
+
+kcadm create clients \
+  -r ${KEYCLOAK_REALM} \
+  -s clientId=${ZITI_PKCE_CLIENT_ID} \
+  -s protocol=openid-connect \
+  -s 'redirectUris=["http://localhost:20314/auth"]' \
+  -s 'webOrigins=["https://*"]' \
+  -s 'directAccessGrantsEnabled=false'
+
+CLIENT_SCOPE_ID=$(kcadm get clients -r ${KEYCLOAK_REALM} | jq -r '.[] | select(.clientId == "'${ZITI_PKCE_CLIENT_ID}'") | .id')
+kcadm update realms/${KEYCLOAK_REALM}/clients/${CLIENT_SCOPE_ID} --set fullScopeAllowed=false
+
+kcadm create clients/${CLIENT_SCOPE_ID}/protocol-mappers/models \
+  -r ${KEYCLOAK_REALM} \
+  -s name=audience-mapping \
+  -s protocol=openid-connect \
+  -s protocolMapper=oidc-audience-mapper \
+  -s config.\"included.custom.audience\"="openziti" \
+  -s config.\"access.token.claim\"=\"true\" \
+  -s config.\"id.token.claim\"=\"false\"
