@@ -65,7 +65,7 @@ kcadm create clients \
   -r ${KEYCLOAK_REALM} \
   -s clientId=${ZITI_PKCE_CLIENT_ID} \
   -s protocol=openid-connect \
-  -s 'redirectUris=["http://localhost:20314/auth"]' \
+  -s 'redirectUris=["http://localhost:20314/auth/callback","http://localhost:1234/auth/callback"]' \
   -s 'webOrigins=["https://*"]' \
   -s 'directAccessGrantsEnabled=false'
 
