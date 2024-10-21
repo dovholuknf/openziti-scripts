@@ -63,7 +63,6 @@ for id in ${ZITI_BROWZER_IDENTITIES}; do
   zitiDocker edge create identity user "${id}" --auth-policy ${auth_policy} --external-id "${id}" -a docker.whale.dialers,brozac.dialers
 done
 
-
 echo "adding router ziti-edge-router as docker.whale.binders"
 zitiDocker edge update identity "ziti-edge-router" -a docker.whale.binders,brozac.binders,brozac.binders
 
@@ -78,3 +77,12 @@ createService
 echo "-------------------- DONE --------------------"
 echo ""
 echo "now navigate to: https://docker-whale.${WILDCARD_DNS}"
+
+if [[ "${zitadel_issuer}" != "" ]]; then
+  ziti_object_prefix="zitadel"
+  ext_jwt_signer=$(ziti edge create ext-jwt-signer "${ziti_object_prefix}-ext-jwt-signer" "${zitadel_issuer}" --jwks-endpoint "${zitadel_jwks}" --audience "${zitadel_client_id}" --claims-property email)
+  echo "${ziti_object_prefix} ext jwt signer id: $ext_jwt_signer"
+
+  auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer} --secondary-req-ext-jwt-signer ${ext_jwt_signer})
+  echo "${ziti_object_prefix} auth policy id: $auth_policy"
+fi
