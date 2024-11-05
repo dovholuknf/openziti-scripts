@@ -1,6 +1,7 @@
 unset EXTERNAL_DNS
 base_dns=".clint.demo.openziti.org"
-export ZITI_HOME="$(PWD)"
+export ZITI_HOME="$(PWD)/ziti"
+mkdir $ZITI_HOME
 export EXTERNAL_IP="$(curl -s eth0.me)"       
 export ZITI_CTRL_EDGE_IP_OVERRIDE="${EXTERNAL_IP}"
 export ZITI_ROUTER_IP_OVERRIDE="${EXTERNAL_IP}"
