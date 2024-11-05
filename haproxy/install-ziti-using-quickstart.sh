@@ -1,5 +1,5 @@
 unset EXTERNAL_DNS
-base_dns=".clint.demo.openziti.org"
+base_dns="clint.demo.openziti.org"
 export ZITI_HOME="$(pwd)/ziti"
 mkdir $ZITI_HOME
 export EXTERNAL_IP="$(curl -s eth0.me)"       
