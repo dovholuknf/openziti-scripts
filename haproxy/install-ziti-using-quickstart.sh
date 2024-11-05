@@ -1,4 +1,6 @@
 unset EXTERNAL_DNS
+source /dev/stdin <<< "$(wget -qO- https://get.openziti.io/ziti-cli-functions.sh)"
+unsetZitiEnv
 base_dns="clint.demo.openziti.org"
 export ZITI_HOME="$(pwd)/ziti"
 mkdir $ZITI_HOME
@@ -14,6 +16,6 @@ export ZITI_ROUTER_PORT=11443
 export ZITI_ROUTER_LISTENER_BIND_PORT=11443
 read -sp "Enter ZITI_PWD: " ZITI_PWD && export ZITI_PWD
 echo
-source /dev/stdin <<< "$(wget -qO- https://get.openziti.io/ziti-cli-functions.sh)"; expressInstall
+expressInstall
 
 
