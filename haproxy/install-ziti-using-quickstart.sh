@@ -25,13 +25,13 @@ expressInstall
 echo ""
 echo "express install complete."
 echo "  - sed'ing controller config file for 0.0.0.0->127.0.0.1"
-sed -i 's/0\.0\.0\.0/127.0.0.1/g' "${ZITI_HOME}/${ZITI_NETWORK}.yaml"
+sed -i 's/0\.0\.0\.0:/127.0.0.1:/g' "${ZITI_HOME}/${ZITI_NETWORK}.yaml"
 
 echo "  - sed'ing controller config file for ${controller_port}->${ha_proxy_port}"
 sed -i "s/org:${controller_port}/org:${ha_proxy_port}/g" "${ZITI_HOME}/${ZITI_NETWORK}.yaml"
 
 echo "  - sed'ing router config file for 0.0.0.0->127.0.0.1"
-sed -i 's/0\.0\.0\.0/127.0.0.1/g' "${ZITI_HOME}/${ZITI_NETWORK}-edge-router.yaml"
+sed -i 's/0\.0\.0\.0:/127.0.0.1:/g' "${ZITI_HOME}/${ZITI_NETWORK}-edge-router.yaml"
 
 echo "  - sed'ing router config file for ${controller_port}->${ha_proxy_port}"
 sed -i "s/org:${controller_port}/org:${ha_proxy_port}/g" "${ZITI_HOME}/${ZITI_NETWORK}-edge-router.yaml"
