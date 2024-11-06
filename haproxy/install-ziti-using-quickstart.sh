@@ -15,7 +15,7 @@ export ZITI_CTRL_ADVERTISED_ADDRESS="hapctrl.${base_dns}"
 export ZITI_CTRL_EDGE_ADVERTISED_ADDRESS="hapctrl."${base_dns}
 export ZITI_ROUTER_ADVERTISED_ADDRESS="haper.${base_dns}"
 export ZITI_CTRL_ADVERTISED_PORT=${controller_port}
-export ZITI_CTRL_EDGE_ADVERTISED_PORT=
+export ZITI_CTRL_EDGE_ADVERTISED_PORT=${controller_port}
 export ZITI_ROUTER_PORT=${router_port}
 export ZITI_ROUTER_LISTENER_BIND_PORT=${router_port}
 read -sp "Enter ZITI_PWD: " ZITI_PWD && export ZITI_PWD
