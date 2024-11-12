@@ -86,3 +86,12 @@ if [[ "${zitadel_issuer}" != "" ]]; then
   auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer} --secondary-req-ext-jwt-signer ${ext_jwt_signer})
   echo "${ziti_object_prefix} auth policy id: $auth_policy"
 fi
+
+if [[ "${auth0_issuer}" != "" ]]; then
+  ziti_object_prefix="auth0"
+  ext_jwt_signer=$(ziti edge create ext-jwt-signer "${ziti_object_prefix}-ext-jwt-signer" "${auth0_issuer}" --jwks-endpoint "${auth0_jwks}" --audience "${auth0_client_id}" --claims-property email)
+  echo "${ziti_object_prefix} ext jwt signer id: $ext_jwt_signer"
+
+  auth_policy=$(ziti edge create auth-policy ${ziti_object_prefix}-auth-policy --primary-ext-jwt-allowed --primary-ext-jwt-allowed-signers ${ext_jwt_signer} --secondary-req-ext-jwt-signer ${ext_jwt_signer})
+  echo "${ziti_object_prefix} auth policy id: $auth_policy"
+fi

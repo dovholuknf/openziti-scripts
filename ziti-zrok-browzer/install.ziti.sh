@@ -1,7 +1,12 @@
 echo "sourcing ziti-cli-functions.sh"
 ZITI_CLI_FUNC="https://get.openziti.io/quick/ziti-cli-functions.sh"
 source /dev/stdin <<< "$(wget -qO- $ZITI_CLI_FUNC)";
+unset ZITI_VERSION_OVERRIDE
+unset ZITI_BINARIES_VERSION
+unset ZITI_BINARIES_FILE
+unset ZITI_BIN_DIR
 unsetZitiEnv
+
 source $ENV_VAR_FILE
 
 echo "VERSOIN $ZITI_VERSION_OVERRIDE"
