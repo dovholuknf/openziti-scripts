@@ -6,12 +6,12 @@ ziti edge login -u $ZITI_USER -p $ZITI_PWD -y $ZITI_EDGE_CTRL_ADVERTISED_HOST_PO
 export PATH=$PATH:$ZROK_ROOT/bin
 
 echo "disabling services..."
-sudo systemctl --timeout=10 disable nginx
-sudo systemctl --timeout=10 disable zrok-frontend
-sudo systemctl --timeout=10 disable zrok-controller
-sudo systemctl --timeout=10 stop nginx
-sudo systemctl --timeout=10 stop zrok-frontend
-sudo systemctl --timeout=10 stop zrok-controller
+sudo systemctl disable nginx
+sudo systemctl disable zrok-frontend
+sudo systemctl disable zrok-controller
+sudo systemctl stop nginx
+sudo systemctl stop zrok-frontend
+sudo systemctl stop zrok-controller
 
 echo "deleting from the openziti overlay..."
 
