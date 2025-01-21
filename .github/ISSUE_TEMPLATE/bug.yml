@@ -4,7 +4,7 @@ title: '[Bug]: '
 body:
   - type: markdown
     attributes:
-      value: |
+      value: >
         # Please follow these steps first:
         ## Troubleshoot
         If zrok is not behaving the way you expect, we'd ask you to ask for help 
