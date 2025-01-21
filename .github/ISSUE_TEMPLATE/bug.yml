@@ -7,8 +7,11 @@ body:
       value: |
         # Please follow these steps first
         > [!IMPORTANT]
-        > If zrok is not behaving the way you expect, we'd ask you to ask for help using [our official support forum](https://openziti.discourse.group/) first.
-        > If you are certain you're hitting a bug, we'll ask for steps to reproduce below. Bug reports without clear steps to reproduce will be rejected. If you're unsure of the steps to reproduce, have a discussion on [our official support forum](https://openziti.discourse.group/) first.
+        > If zrok is not behaving the way you expect, we'd ask you to ask for help using [our official support forum](https://openziti.discourse.group/).
+        > 
+        > If you are certain you're hitting a bug, please fill out the steps to reproduce below. Bug reports without clear steps to reproduce will be rejected.
+        > 
+        > If you're unsure of the steps to reproduce, have a discussion on [our official support forum](https://openziti.discourse.group/) first.
 
         ---
   - type: input
@@ -16,10 +19,10 @@ body:
     attributes:
       label: Version
       description: |
-        The version of zrok you are using. You can find this by running `zrok version`
+        The version of zrok you are using including your OS and Arch. You can find this by running `zrok version`
         Is it the [latest](https://github.com/openziti/zrok/releases)? If not, please 
         check/est and see if the bug has already been fixed.
-      placeholder: ex. v0.4.39 [9dce9b71]
+      placeholder: ex. v0.4.39 [9dce9b71] Windows 11 x64
     validations:
       required: true
   - type: textarea
