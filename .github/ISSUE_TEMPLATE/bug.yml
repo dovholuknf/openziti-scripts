@@ -10,13 +10,19 @@ body:
     attributes:
       value: |
         ## Troubleshoot
-        If zrok is not behaving the way you expect, we'd ask you to ask for help using [our official support forum](https://openziti.discourse.group/) first.
+        If zrok is not behaving the way you expect, we'd ask you to ask for help 
+        using [our official support forum](https://openziti.discourse.group/) first.
         If you are certain you're hitting a bug, we'll ask for steps to reproduce below.
   - type: markdown
     attributes:
       value: |
         > [!IMPORTANT]
-        > Bug reports without clear steps to reproduce will be rejected. If you're unsure of the steps to reproduce, have a discussion on the support forum first.
+        > If zrok is not behaving the way you expect, we'd ask you to ask for help using 
+        > [our official support forum](https://openziti.discourse.group/) first. If you 
+        > are certain you're hitting a bug, we'll ask for steps to reproduce below. Bug
+        > reports without clear steps to reproduce will be rejected. If you're unsure of
+        > the steps to reproduce, have a discussion on 
+        > [our official support forum](https://openziti.discourse.group/) first.
 
         ---
   - type: input
@@ -25,7 +31,8 @@ body:
       label: Version
       description: |
         The version of zrok you are using. You can find this by running `zrok version`
-        Is it the [latest](https://github.com/openziti/zrok/releases)? If not, please check/est and see if the bug has already been fixed.
+        Is it the [latest](https://github.com/openziti/zrok/releases)? If not, please 
+        check/est and see if the bug has already been fixed.
       placeholder: ex. v0.4.39 [9dce9b71]
     validations:
       required: true
@@ -33,7 +40,8 @@ body:
     id: reproduction
     attributes:
       label: Steps to reproduce
-      description: Try to describe as accurately as possible how we can reproduce/verify the bug. If there's any additional context that is possibly helpful, add it here
+      description: Try to describe as accurately as possible how we can reproduce/verify 
+      the bug. If there's any additional context that is possibly helpful, add it here
       placeholder: |
         Example steps (replace with your own):
         1. enable a zrok environment
