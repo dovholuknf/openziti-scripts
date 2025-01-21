@@ -38,7 +38,7 @@ body:
     attributes:
       label: Steps to reproduce
       description: Try to describe as accurately as possible how we can reproduce/verify 
-      the bug. If there's any additional context that is possibly helpful, add it here
+        the bug. If there's any additional context that is possibly helpful, add it here
       placeholder: |
         Example steps (replace with your own):
         1. enable a zrok environment
