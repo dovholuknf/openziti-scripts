@@ -5,7 +5,6 @@ body:
   - type: markdown
     attributes:
       value: |
-        # Please follow these steps first
         > [!IMPORTANT]
         > If zrok is not behaving the way you expect, we'd ask you to ask for help using [our official support forum](https://openziti.discourse.group/).
         > 
