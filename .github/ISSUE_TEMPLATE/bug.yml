@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: >
-        # Please follow these steps first:
-        ## Troubleshoot
+        # Please follow these steps first:\n
+        ## Troubleshoot\n
         If zrok is not behaving the way you expect, we'd ask you to ask for help 
         using [our official support forum](https://openziti.discourse.group/) first.
         If you are certain you're hitting a bug, we'll ask for steps to reproduce below.
