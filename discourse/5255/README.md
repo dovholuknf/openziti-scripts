@@ -60,46 +60,46 @@ web:
           indexFile: index.html
 HERE
 ```
----
 
+restart controller
+```
 docker compose restart ziti-controller
-
+```
 ---
-
+```
 docker compose exec -it ziti-controller bash
 
 ziti edge login ${ZITI_NETWORK}:$ZITI_CTRL_SECURE_PORT \
---username $ZITI_USER --password $ZITI_PWD --yes
+  --username $ZITI_USER --password $ZITI_PWD --yes
 
 
 ziti edge create config secure-apis-host.v1 host.v1 \
-'{"protocol":"tcp", "address":"'"${ZITI_NETWORK}"'","port":'"${ZITI_CTRL_SECURE_PORT}"'}'
+  '{"protocol":"tcp", "address":"'"${ZITI_NETWORK}"'","port":'"${ZITI_CTRL_SECURE_PORT}"'}'
 ziti edge create config secure-apis-intercept.v1 intercept.v1 \
-'{"protocols":["tcp"],"addresses":["secured-apis.ziti"], "portRanges":[{"low":'${ZITI_CTRL_SECURE_PORT}', "high":'${ZITI_CTRL_SECURE_PORT}'}]}'
+  '{"protocols":["tcp"],"addresses":["secured-apis.ziti"], "portRanges":[{"low":'${ZITI_CTRL_SECURE_PORT}', "high":'${ZITI_CTRL_SECURE_PORT}'}]}'
 ziti edge create service secure-apis --configs "secure-apis-host.v1","secure-apis-intercept.v1" -a admin-services
 
 ziti edge create service-policy "secured-apis-bind" Bind \
---service-roles "#admin-services" \
---identity-roles "@${ZITI_ROUTER_NAME}" \
---semantic "AnyOf"
+  --service-roles "#admin-services" \
+  --identity-roles "@${ZITI_ROUTER_NAME}" \
+  --semantic "AnyOf"
 ziti edge create service-policy "secured-apis-dial" Dial \
---service-roles "#admin-services" \
---identity-roles "#admins" \
---semantic "AnyOf"
+  --service-roles "#admin-services" \
+  --identity-roles "#admins" \
+  --semantic "AnyOf"
 
 ziti edge create identity ziti-admin -a admins -o ziti-admin.jwt
-
+```
 # now exit interactive container
 
-
----
-
+```
 docker compose cp ziti-controller:/persistent/ziti-admin.jwt .
 scp cdaws:git/dovholuknf/openziti-scripts/discourse/5255/ziti-admin.jwt /mnt/c/temp/ziti-admin.jwt
+```
 
-# enroll identity
+## enroll identity
 
-# go to 
+## go to 
 https://secured-apis.ziti:8888/zac/dashboard
 
 
