@@ -10,9 +10,7 @@ docker compose up -d
 
 ziti ops verify traffic --controller-url https://ec2-3-18-113-172.us-east-2.compute.amazonaws.com:8841/ --username admin --password discourse5255
 
--- done --
-
-## split api
+## split/secure api
 
 ## exec to controller:
 docker compose exec -it ziti-controller bash
@@ -68,6 +66,8 @@ docker compose restart ziti-controller
 
 ---
 
+docker compose exec -it ziti-controller bash
+
 ziti edge login ${ZITI_NETWORK}:$ZITI_CTRL_SECURE_PORT \
 --username $ZITI_USER --password $ZITI_PWD --yes
 
@@ -89,15 +89,18 @@ ziti edge create service-policy "secured-apis-dial" Dial \
 
 ziti edge create identity ziti-admin -a admins -o ziti-admin.jwt
 
-exit interactive container
+# now exit interactive container
 
 
 ---
 
 docker compose cp ziti-controller:/persistent/ziti-admin.jwt .
-scp cdaws:discourse/discourse5255/ziti-admin.jwt /mnt/c/temp/ziti-admin.jwt
+scp cdaws:git/dovholuknf/openziti-scripts/discourse/5255/ziti-admin.jwt /mnt/c/temp/ziti-admin.jwt
 
+# enroll identity
 
+# go to 
+https://secured-apis.ziti:8888/zac/dashboard
 
 
 
