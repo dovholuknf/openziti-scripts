@@ -1,22 +1,31 @@
 # Quick Docker Example
 
+see: https://openziti.discourse.group/t/how-to-for-self-hosting-behind-nat/5255
+
+```
 run ../../fetch-zac.sh
+```
 
 ## make sure zac path correct in compose file
 
+```
 docker compose up -d
+```
 
 # wait for it to come online....
 
+```
 ziti ops verify traffic --controller-url https://ec2-3-18-113-172.us-east-2.compute.amazonaws.com:8841/ --username admin --password discourse5255
+```
 
 ## split/secure api
 
 ## exec to controller:
+```
 docker compose exec -it ziti-controller bash
+```
 
-# EDIT ${ZITI_CTRL_EDGE_NAME}.yaml or just run the commands below
-# (or edit however you prefer)
+EDIT `${ZITI_CTRL_EDGE_NAME}.yaml` or just run the commands below (or edit however you prefer)
 
 ```
 sed '/^web/,$d' ${ZITI_NETWORK}.yaml > temp.yaml && \
