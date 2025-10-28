@@ -1,6 +1,6 @@
 # Quick Docker Example
 
-run ./fetch-zac.sh
+run ../../fetch-zac.sh
 
 ## make sure zac path correct in compose file
 
