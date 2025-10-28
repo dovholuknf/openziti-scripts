@@ -20,48 +20,48 @@ docker compose exec -it ziti-controller bash
 # EDIT ${ZITI_CTRL_EDGE_NAME}.yaml or just run the commands below
 # (or edit however you prefer)
 
-
+```
 sed '/^web/,$d' ${ZITI_NETWORK}.yaml > temp.yaml && \
-mv temp.yaml ${ZITI_NETWORK}.yaml
+  mv temp.yaml ${ZITI_NETWORK}.yaml
 
 cat >> ${ZITI_NETWORK}.yaml <<HERE
 web:
-- name: public-apis
-  bindPoints:
-    - interface: 0.0.0.0:8841
-      address: ec2-3-18-113-172.us-east-2.compute.amazonaws.com:8841
-      options:
+  - name: public-apis
+    bindPoints:
+      - interface: 0.0.0.0:8841
+        address: ec2-3-18-113-172.us-east-2.compute.amazonaws.com:8841
+    options:
       idleTimeout: 5000ms
       readTimeout: 5000ms
       writeTimeout: 100000ms
       minTLSVersion: TLS1.2
       maxTLSVersion: TLS1.3
-      apis:
-    - binding: edge-client
-      options: { }
-    - binding: edge-oidc
-      options: { }
-- name: secured-apis
-  bindPoints:
-    - interface: ${ZITI_NETWORK}:${ZITI_CTRL_SECURE_PORT}
-      address: ${ZITI_NETWORK}:${ZITI_CTRL_SECURE_PORT}
-      options:
+    apis:
+      - binding: edge-client
+        options: { }
+      - binding: edge-oidc
+        options: { }
+  - name: secured-apis
+    bindPoints:
+      - interface: ${ZITI_NETWORK}:${ZITI_CTRL_SECURE_PORT}
+        address: ${ZITI_NETWORK}:${ZITI_CTRL_SECURE_PORT}
+    options:
       idleTimeout: 5000ms
       readTimeout: 5000ms
       writeTimeout: 100000ms
       minTLSVersion: TLS1.2
       maxTLSVersion: TLS1.3
-      apis:
-    - binding: edge-management
-      options: { }
-    - binding: fabric
-      options: { }
-    - binding: zac
-      options:
-      location: /zac
-      indexFile: index.html
-      HERE
-
+    apis:
+      - binding: edge-management
+        options: { }
+      - binding: fabric
+        options: { }
+      - binding: zac
+        options:
+          location: /zac
+          indexFile: index.html
+HERE
+```
 ---
 
 docker compose restart ziti-controller
