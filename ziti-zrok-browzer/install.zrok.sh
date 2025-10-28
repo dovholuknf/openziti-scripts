@@ -17,6 +17,7 @@ sudo tee /etc/nginx/nginx.conf > /dev/null << HERE
 events {
 }
 http {
+  include /etc/nginx/sites-enabled/*;  # Ensure this line exists
   server {
       listen              ${ZROK_NGINX_PORT} ssl;
       server_name         ${ZROK_API_ADDRESS};
